@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bowie-cafe-v1';
+const CACHE_NAME = 'bowie-cafe-v2';
 const urlsToCache = [
   '/',
   '/index.html',
