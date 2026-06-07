@@ -2,7 +2,7 @@
   "name": "James Bowie Cafeteria Manager",
   "short_name": "Bowie Cafe",
   "description": "Cafeteria Management System for James Bowie Middle School",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#064e3b",
