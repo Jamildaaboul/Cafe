@@ -1,0 +1,910 @@
+{
+  "version": 2,
+  "exportDate": "2026-06-07T00:54:52.808Z",
+  "menuItems": [
+    {
+      "id": "mq2om67kprsfu",
+      "name": "Bacon (Pork) & Cheddar Egg Bites",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2pv241re2v9",
+      "name": "Mini Blueberry Pancakes",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 72
+    },
+    {
+      "id": "mq2pvggx5ev4e",
+      "name": "Mini Confetti Pancakes",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 72
+    },
+    {
+      "id": "mq2py93u8enzl",
+      "name": "Mini Maple Pancakes",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 72
+    },
+    {
+      "id": "mq2pyykmxxty4",
+      "name": "Honey Cheerios",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2pzsqcqz7pg",
+      "name": "Reduced Sugar Cocoa Puffs",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2rmxoifqaid",
+      "name": "Orange Citrus Juice",
+      "mealPeriod": "Breakfast",
+      "category": "Juice",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2rngk8q57t9",
+      "name": "Fresh Pear",
+      "mealPeriod": "Breakfast",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2ro5pctiqbq",
+      "name": "1% Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2rom9eexdpy",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2to1lqgufta",
+      "name": "Chicken Caesar Wrap",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 175
+    },
+    {
+      "id": "mq2towx0tq8m2",
+      "name": "Nacho Bar",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 700
+    },
+    {
+      "id": "mq2ts4xrh35mn",
+      "name": "Flame Roasted Corn & Jalapeno",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 125
+    },
+    {
+      "id": "mq2tsr1u0srms",
+      "name": "Salsa Dipping Cup",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2ttrmbmq593",
+      "name": "Salsa Dipping Cup",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2tukvx4ugwq",
+      "name": "Fruit Slush, 100% Juice",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 450
+    },
+    {
+      "id": "mq2tvak86ev9g",
+      "name": "Watermelon",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 400
+    },
+    {
+      "id": "mq2tx8a05uj1w",
+      "name": "Yellow Corn Tortilla Chips",
+      "mealPeriod": "Lunch",
+      "category": "Side",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 700
+    },
+    {
+      "id": "mq2ty3mdsdo0e",
+      "name": "Cheddar Cheese Sauce",
+      "mealPeriod": "Lunch",
+      "category": "Protein",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 700
+    },
+    {
+      "id": "mq2typ7g8jb3v",
+      "name": "Turkey Taco Meat",
+      "mealPeriod": "Lunch",
+      "category": "Protein",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 400
+    },
+    {
+      "id": "mq2tz7u909vnj",
+      "name": "1% Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2tztpkgjohz",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2u1741a4z8u",
+      "name": "Hot Sauce Packet",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2u1rue1g1yj",
+      "name": "Low Sodium Tajin Packet",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 25
+    },
+    {
+      "id": "mq2u2df996iom",
+      "name": "Pico De Gallo",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 300
+    },
+    {
+      "id": "mq2u2vt4wh8tv",
+      "name": "Guacamole Cup",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2u3jv3p70t7",
+      "name": "Sour Cream",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2u4fkt947hg",
+      "name": "Flame Roasted Corn & Jalapeno",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 125
+    },
+    {
+      "id": "mq2u4q5q9h3pd",
+      "name": "Strawberry Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Tuesday",
+      "expectedServings": 400
+    },
+    {
+      "id": "mq2u72rpo0cbe",
+      "name": "Glazed Cinnamon Roll",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2u7n5weh61l",
+      "name": "Peanut Butter & Grape Jelly",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 72
+    },
+    {
+      "id": "mq2u84vok21jg",
+      "name": "Peanut Butter & Grape Jelly",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 120
+    },
+    {
+      "id": "mq2u8sfjiqacc",
+      "name": "Cinnamon Toast Crunch",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2u9996hez1k",
+      "name": "Reduced Sugar Trix",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2u9rowslipc",
+      "name": "Apple Juice",
+      "mealPeriod": "Breakfast",
+      "category": "Juice",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2uabpdzyzxp",
+      "name": "Original Applesauce Cup",
+      "mealPeriod": "Breakfast",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 96
+    },
+    {
+      "id": "mq2uas2asswxy",
+      "name": "Original Applesauce Cup",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2ub7s795tsl",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2ucazq9o98e",
+      "name": "BBQ Wings",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 225
+    },
+    {
+      "id": "mq2ucqhypee8y",
+      "name": "Buffalo Wings",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 225
+    },
+    {
+      "id": "mq2udas1zngus",
+      "name": "Deluxe Macaroni & Cheese",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2udsr812s5j",
+      "name": "Garlic Parmesan Wings",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 75
+    },
+    {
+      "id": "mq2ue9m4gq2ix",
+      "name": "Mango Habanero Wings",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 75
+    },
+    {
+      "id": "mq2ueqzsz65b1",
+      "name": "Peanut Butter & Jelly",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2ufbnpzrf0k",
+      "name": "Garlic Breadstick",
+      "mealPeriod": "Lunch",
+      "category": "Protein",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 600
+    },
+    {
+      "id": "mq2ug0h20h96t",
+      "name": "Carrot Sticks",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 75
+    },
+    {
+      "id": "mq2ughqkmcv15",
+      "name": "Celery Sticks",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2ugwfr42foq",
+      "name": "Steamed Broccoli",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 75
+    },
+    {
+      "id": "mq2uhdkvzkn1u",
+      "name": "Blue Raspberry Applesauce Cup",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 700
+    },
+    {
+      "id": "mq2uht72vre5j",
+      "name": "Orange",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 250
+    },
+    {
+      "id": "mq2uipcfj1yfe",
+      "name": "1% Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2uj7vgu0ckc",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2ujntyfq9m5",
+      "name": "Strawberry Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 350
+    },
+    {
+      "id": "mq2ukd4a5uzwv",
+      "name": "Low Sodium Tajin Packet",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2ukswqp8e57",
+      "name": "Ranch",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Wednesday",
+      "expectedServings": 250
+    },
+    {
+      "id": "mq2upldo6wey2",
+      "name": "Breakfast Chicken Croissant",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2uq7nmcauly",
+      "name": "Mixed Berry Parfait",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2ur60i2cga4",
+      "name": "Peanut Butter & Grape Jelly",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 75
+    },
+    {
+      "id": "mq2urpjwbzuap",
+      "name": "Blueberry Chex",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 20
+    },
+    {
+      "id": "mq2us4mwkjv0c",
+      "name": "Cinnamon Chex",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 20
+    },
+    {
+      "id": "mq2uskpjotgpc",
+      "name": "Tater Squares",
+      "mealPeriod": "Breakfast",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2utbgie0cmk",
+      "name": "Apple Juice",
+      "mealPeriod": "Breakfast",
+      "category": "Juice",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 140
+    },
+    {
+      "id": "mq2utuoedv6qs",
+      "name": "1% Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2uuau7vnxwg",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2uuyr011mqb",
+      "name": "Grape Jelly Packet",
+      "mealPeriod": "Breakfast",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2uw46cbfyhx",
+      "name": "Beef Banh Mi Sandwich",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2uwofdyhn7h",
+      "name": "Chicken Caesar Wrap",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 125
+    },
+    {
+      "id": "mq2uxcw1vlfi6",
+      "name": "Smothered Bean & Cheese Burrito",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 125
+    },
+    {
+      "id": "mq2uy5uj6e3vw",
+      "name": "Breaded Hot & Spicy Chicken Tenders",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 450
+    },
+    {
+      "id": "mq2uyokao7f1n",
+      "name": "Salad Pizzazz",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2uz5ykfc1m3",
+      "name": "Seasoned Green Beans",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2uzxn4az39t",
+      "name": "Seasoned Potato Wedges",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 300
+    },
+    {
+      "id": "mq2v0bcli9m8w",
+      "name": "Diced Pear Cup",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 450
+    },
+    {
+      "id": "mq2v0uubg25kq",
+      "name": "Red Grapes",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 400
+    },
+    {
+      "id": "mq2v1akvjy72a",
+      "name": "1% Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2v1tz0vqfbr",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2v2j4bnb093",
+      "name": "Strawberry Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 350
+    },
+    {
+      "id": "mq2v2zsar6da3",
+      "name": "Ketchup",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 500
+    },
+    {
+      "id": "mq2v3io9rds00",
+      "name": "Ranch",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Thursday",
+      "expectedServings": 200
+    },
+    {
+      "id": "mq2v5vzqlj9ub",
+      "name": "Honeybun",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 120
+    },
+    {
+      "id": "mq2v6ez3eyx0v",
+      "name": "Peanut Butter & Grape Jelly",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 72
+    },
+    {
+      "id": "mq2v6sx32h2gu",
+      "name": "Sunrise Breakfast Bowl",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2v79s7gvd8t",
+      "name": "Reduced Sugar Cocoa Puffs",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 20
+    },
+    {
+      "id": "mq2v7th71rd03",
+      "name": "Reduced Sugar Trix",
+      "mealPeriod": "Breakfast",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 20
+    },
+    {
+      "id": "mq2v8aunf5835",
+      "name": "Orange Citrus Juice",
+      "mealPeriod": "Breakfast",
+      "category": "Juice",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2v8ri1sc897",
+      "name": "Fresh Apple",
+      "mealPeriod": "Breakfast",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 138
+    },
+    {
+      "id": "mq2v97iurq2qw",
+      "name": "1% Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2v9led3h7wp",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Breakfast",
+      "category": "Milk",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2varrymbmwe",
+      "name": "Peanut Butter & Jelly",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2vb8gk5kphb",
+      "name": "Thin Crust All Beef Pepperoni Pizza",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 400
+    },
+    {
+      "id": "mq2vbqokbk56g",
+      "name": "Thin Crust Cheese Pizza",
+      "mealPeriod": "Lunch",
+      "category": "Entrée",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 350
+    },
+    {
+      "id": "mq2vci70gwj3d",
+      "name": "Cherry Tomatoes",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 75
+    },
+    {
+      "id": "mq2vd36smfjdw",
+      "name": "Combination Salad",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Monday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2vdko0zltr2",
+      "name": "Seasoned Corn",
+      "mealPeriod": "Lunch",
+      "category": "Vegetable",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 150
+    },
+    {
+      "id": "mq2ve23ryb351",
+      "name": "Banana",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 100
+    },
+    {
+      "id": "mq2veq11g7yv4",
+      "name": "Lone Star Luau Slush",
+      "mealPeriod": "Lunch",
+      "category": "Fruit",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 700
+    },
+    {
+      "id": "mq2vf71j3tz2d",
+      "name": "1% Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 50
+    },
+    {
+      "id": "mq2vfns0qkmov",
+      "name": "Fat-Free Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 125
+    },
+    {
+      "id": "mq2vg607j32fi",
+      "name": "Strawberry Milk",
+      "mealPeriod": "Lunch",
+      "category": "Milk",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 300
+    },
+    {
+      "id": "mq2vgo1pwozxo",
+      "name": "Ranch",
+      "mealPeriod": "Lunch",
+      "category": "Condiment",
+      "week": "1",
+      "day": "Friday",
+      "expectedServings": 200
+    }
+  ],
+  "dailyEntries": {
+    "2026-08-11": {},
+    "2026-06-06": {}
+  }
+}
