@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James Bowie Middle School — Cafeteria Manager</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#064e3b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Bowie Cafe">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#064e3b', secondary: '#047857', accent: '#10b981', success: '#22c55e', warning: '#f59e0b', danger: '#ef4444' } } } }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+        .section { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .section.active { display: block; opacity: 1; }
+        .nav-btn { border-radius: 10px; transition: all 0.2s ease; }
+        .nav-btn.active { background: rgba(20, 184, 166, 0.1); color: #0f766e; font-weight: 600; }
+        .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 0.25s ease; }
+        .touch-input { min-height: 44px; font-size: 15px; border-radius: 12px; background: #f8fafc; border: 1.5px solid #e2e8f0; transition: all 0.2s ease; }
+        .touch-input:focus { background: #fff; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15); outline: none; }
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .btn-primary { background: #0f766e; color: white; border-radius: 12px; font-weight: 600; padding: 10px 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary:hover { background: #0d9488; }
+        body.dark-mode { background-color: #0f172a !important; color: #f8fafc !important; }
+        body.dark-mode .bg-white { background-color: #1e293b !important; }
+        body.dark-mode .text-gray-800, body.dark-mode .text-slate-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500 { color: #cbd5e1 !important; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-gray-100 { border-color: #334155 !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode .touch-input { background-color: #334155 !important; color: white !important; border-color: #475569 !important; }
+        body.dark-mode .bg-gray-50 { background-color: #0f172a !important; }
+        body.dark-mode .nav-btn { color: #cbd5e1 !important; }
+        body.dark-mode .nav-btn.active { background-color: rgba(20, 184, 166, 0.2) !important; color: #14b8a6 !important; }
+        body.dark-mode .stat-card { background-color: #1e293b !important; border-color: #334155 !important; }
+        #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #064e3b 0%, #047857 100%); }
+        .login-card { background: white; border-radius: 24px; padding: 3rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 400px; width: 90%; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<div id="login-screen" style="display: none;">
+    <div class="login-card">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i data-lucide="chef-hat" class="w-10 h-10 text-white"></i>
+            </div>
+            <h2 id="login-title" class="text-3xl font-bold text-emerald-900 mb-2">Welcome Back</h2>
+            <p id="login-subtitle" class="text-gray-500">Sign in to access the Cafeteria Management System</p>
+        </div>
+        <form id="login-form" onsubmit="handleAuth(event)">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="auth-email" required class="touch-input w-full px-4 py-3" placeholder="your@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="auth-password" required minlength="6" class="touch-input w-full px-4 py-3" placeholder="••••••••">
+                </div>
+                <div id="auth-error" class="text-red-600 text-sm hidden"></div>
+                <button type="submit" class="w-full btn-primary justify-center py-3">
+                    <i data-lucide="log-in" class="w-5 h-5"></i>
+                    <span id="auth-button-text">Sign In</span>
+                </button>
+            </div>
+        </form>
+        <div class="mt-6 text-center">
+            <button onclick="toggleAuthMode()" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                <span id="toggle-text">Need an account? Sign up</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="main-app" style="display: none;">
+<header class="bg-[#064e3b] text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                <i data-lucide="chef-hat" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold leading-tight">James Bowie Middle School</h1>
+                <p class="text-emerald-200 text-xs md:text-sm">Cafeteria Management System</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            <span id="rotation-badge" class="hidden md:inline-block bg-white/20 text-white text-xs px-3 py-1 rounded-full font-medium"></span>
+            <button onclick="quickSave()" class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                <i data-lucide="save" class="w-4 h-4"></i> <span class="hidden sm:inline">Save</span>
+            </button>
+            <button onclick="toggleDarkMode()" id="dark-mode-btn" class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                <i data-lucide="moon" class="w-4 h-4"></i> <span class="hidden sm:inline">Dark Mode</span>
+            </button>
+            <button onclick="handleSignOut()" class="flex items-center gap-1.5 bg-red-500/90 hover:bg-red-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">
+                <i data-lucide="log-out" class="w-4 h-4"></i> <span class="hidden sm:inline">Sign Out</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex gap-1 overflow-x-auto py-1 -mb-px">
+            <button onclick="showSection('dashboard')" class="nav-btn active flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 hover:text-accent whitespace-nowrap transition" id="nav-dashboard">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+            </button>
+            <button onclick="showSection('menu-setup')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 hover:text-accent whitespace-nowrap transition" id="nav-menu-setup">
+                <i data-lucide="calendar-days" class="w-4 h-4"></i> Menu Setup
+            </button>
+            <button onclick="showSection('daily-entry')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 hover:text-accent whitespace-nowrap transition" id="nav-daily-entry">
+                <i data-lucide="clipboard-list" class="w-4 h-4"></i> Daily Entry
+            </button>
+            <button onclick="showSection('forecast')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 hover:text-accent whitespace-nowrap transition" id="nav-forecast">
+                <i data-lucide="brain" class="w-4 h-4"></i> AI Forecast
+            </button>
+            <button onclick="showSection('reports')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 hover:text-accent whitespace-nowrap transition" id="nav-reports">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Reports
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+    <div id="dashboard" class="section active">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+            <div class="text-sm text-gray-500" id="dashboard-date"></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div class="stat-card p-4 border-l-4 border-accent"><div class="text-2xl font-bold text-gray-800" id="stat-served">0</div><div class="text-xs text-gray-500 mt-1">Students Served</div></div>
+            <div class="stat-card p-4 border-l-4 border-success"><div class="text-2xl font-bold text-gray-800" id="stat-produced">0</div><div class="text-xs text-gray-500 mt-1">Total Produced</div></div>
+            <div class="stat-card p-4 border-l-4 border-warning"><div class="text-2xl font-bold text-gray-800" id="stat-waste">0</div><div class="text-xs text-gray-500 mt-1">Waste Servings</div></div>
+            <div class="stat-card p-4 border-l-4 border-purple-500"><div class="text-2xl font-bold text-gray-800" id="stat-return">0</div><div class="text-xs text-gray-500 mt-1">Returns to Stock</div></div>
+            <div class="stat-card p-4 border-l-4 border-danger"><div class="text-2xl font-bold text-gray-800" id="stat-waste-pct">0%</div><div class="text-xs text-gray-500 mt-1">Waste %</div></div>
+            <div class="stat-card p-4 border-l-4 border-emerald-500"><div class="text-2xl font-bold text-gray-800" id="stat-participation">0%</div><div class="text-xs text-gray-500 mt-1">Participation %</div></div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold text-gray-700 mb-3">Daily Meal Counts (Last 7 Days)</h3><canvas id="chart-daily" height="200"></canvas></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold text-gray-700 mb-3">Waste vs Served Trend</h3><canvas id="chart-waste" height="200"></canvas></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100"><h3 class="font-semibold text-gray-700">Today's Production Summary</h3></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left font-semibold text-gray-600">Item</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Meal</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Planned</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Produced</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Served</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Return</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Waste</th></tr></thead><tbody id="dashboard-tbody"><tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No production data for today yet</td></tr></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="menu-setup" class="section">
+        <div class="flex items-center justify-between mb-6"><h2 class="text-2xl font-bold text-gray-800">Menu Setup</h2><span class="text-sm text-gray-500">3-Week Rotating Cycle</span></div>
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h3 class="font-semibold text-gray-700 mb-4 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-accent"></i> Add New Menu Item</h3>
+            <form id="menu-form" onsubmit="addMenuItem(event)">
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <div><label class="block text-sm font-medium text-gray-600 mb-1">Item Name</label><input type="text" id="m-item" required class="touch-input w-full px-4 py-3"></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-1">Meal Period</label><select id="m-period" class="touch-input w-full px-4 py-3"><option>Breakfast</option><option>Lunch</option><option>A La Carte</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-1">Category</label><select id="m-category" class="touch-input w-full px-4 py-3"><option>Entrée</option><option>Side</option><option>Vegetable</option><option>Fruit</option><option>Milk</option><option>Condiment</option><option>Protein</option><option>Juice</option><option>Grain</option></select></div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div><label class="block text-sm font-medium text-gray-600 mb-1">Rotation Week</label><select id="m-week" class="touch-input w-full px-4 py-3"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-1">Day Served</label><select id="m-day" class="touch-input w-full px-4 py-3"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-1">Expected Servings</label><input type="number" id="m-exp" min="1" required class="touch-input w-full px-4 py-3"></div>
+                </div>
+                <button type="submit" class="btn-primary">Add to Menu</button>
+            </form>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap gap-3 items-center">
+            <span class="text-sm font-medium text-gray-600">Filter:</span>
+            <select id="filter-week" onchange="renderMenuList()" class="text-sm border border-gray-300 rounded-lg px-3 py-2"><option value="all">All Weeks</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select>
+            <select id="filter-period" onchange="renderMenuList()" class="text-sm border border-gray-300 rounded-lg px-3 py-2"><option value="all">All Periods</option><option>Breakfast</option><option>Lunch</option><option>A La Carte</option></select>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100"><h3 class="font-semibold text-gray-700">Current Menu Items (<span id="menu-count">0</span>)</h3></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left font-semibold text-gray-600">Item Name</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Meal</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Category</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Week</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Day</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Expected</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Actions</th></tr></thead><tbody id="menu-tbody"><tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No menu items added yet</td></tr></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="daily-entry" class="section">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <h2 class="text-2xl font-bold text-gray-800">Daily Production Entry</h2>
+            <div class="flex items-center gap-3 flex-wrap">
+                <input type="date" id="entry-date" onchange="renderDailyEntry()" class="touch-input border border-gray-300 rounded-lg px-4 py-2">
+                <button onclick="saveDailyEntry()" class="bg-success hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition shadow-md flex items-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Save Entry</button>
+                <button type="button" onclick="addDailyItemRow()" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg transition shadow-md flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add Item Sold</button>
+                <button type="button" onclick="copyFromYesterday()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-3 rounded-lg transition shadow-md flex items-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Copy Yesterday</button>
+                <button type="button" onclick="copyFromLastWeek()" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold px-4 py-3 rounded-lg transition shadow-md flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Copy Last Week</button>
+            </div>
+        </div>
+        <div id="entry-info-banner" class="bg-accent/10 border border-accent/20 rounded-xl p-4 mb-6 flex items-center gap-3"><i data-lucide="info" class="w-5 h-5 text-accent"></i><div><span class="font-medium text-accent" id="entry-week-info">Select a date to see menu items</span></div></div>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left font-semibold text-gray-600">Item</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Meal</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Category</th><th class="px-4 py-3 text-center font-semibold text-gray-600 min-w-[100px]">Planned</th><th class="px-4 py-3 text-center font-semibold text-gray-600 min-w-[100px]">Produced</th><th class="px-4 py-3 text-center font-semibold text-gray-600 min-w-[100px]">Return</th><th class="px-4 py-3 text-center font-semibold text-gray-600 min-w-[110px]">Students Served <span class="text-xs font-normal text-gray-400">(Auto)</span></th><th class="px-4 py-3 text-center font-semibold text-gray-600 min-w-[100px]">Waste</th></tr></thead><tbody id="entry-tbody"><tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Select a date to load menu items</td></tr></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="forecast" class="section">
+        <div class="flex items-center justify-between mb-6"><h2 class="text-2xl font-bold text-gray-800">AI Forecast Engine</h2><button onclick="showForecastWeek(1, document.getElementById('btn-week-1'))" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg transition shadow-md flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Forecast</button></div>
+        <div class="bg-gradient-to-br from-primary via-secondary to-accent rounded-xl p-6 mb-6 text-white shadow-lg">
+            <div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center"><i data-lucide="calendar-range" class="w-6 h-6"></i></div><div><h3 class="font-bold text-lg">Next 3-Week Cycle Lookahead</h3><p class="text-emerald-200 text-sm">Select a week to view daily production estimates</p></div></div>
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <button onclick="showForecastWeek(1, this)" id="btn-week-1" class="py-3 rounded-xl font-bold text-white shadow-lg transition transform scale-105 border-2 bg-emerald-500 border-emerald-300">Week 1</button>
+                <button onclick="showForecastWeek(2, this)" id="btn-week-2" class="py-3 rounded-xl font-bold text-white shadow-lg transition transform hover:scale-105 border-2 bg-amber-500/40 border-transparent opacity-60 hover:opacity-100">Week 2</button>
+                <button onclick="showForecastWeek(3, this)" id="btn-week-3" class="py-3 rounded-xl font-bold text-white shadow-lg transition transform hover:scale-105 border-2 bg-purple-500/40 border-transparent opacity-60 hover:opacity-100">Week 3</button>
+            </div>
+            <div id="next-rotation-results" class="space-y-6"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h3 class="font-semibold text-gray-700 mb-4">Look Up a Specific Day</h3>
+            <div class="grid md:grid-cols-3 gap-4 mb-4">
+                <div><label class="block text-sm font-medium text-gray-600 mb-1">Rotation Week</label><select id="fc-week" class="touch-input w-full px-4 py-3"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-600 mb-1">Day</label><select id="fc-day" class="touch-input w-full px-4 py-3"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-600 mb-1">Meal Period</label><select id="fc-period" class="touch-input w-full px-4 py-3"><option value="all">All Periods</option><option>Breakfast</option><option>Lunch</option><option>A La Carte</option></select></div>
+            </div>
+            <button onclick="lookupForecast()" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg transition">Generate Forecast</button>
+            <div id="lookup-results" class="mt-4"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h3 class="font-semibold text-gray-700 mb-2 flex items-center gap-2"><i data-lucide="calendar-range" class="w-5 h-5 text-accent"></i> Full Week Forecast</h3>
+            <p class="text-sm text-gray-500 mb-4">Generate production numbers for all 5 days of a specific rotation week.</p>
+            <div class="flex flex-wrap gap-4 items-end mb-4">
+                <div><label class="block text-sm font-medium text-gray-600 mb-1">Rotation Week</label><select id="fc-weekly-week" class="touch-input w-full px-4"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-600 mb-1">Meal Period</label><select id="fc-weekly-period" class="touch-input w-full px-4"><option value="all">All Meals</option><option>Breakfast Only</option><option>Lunch Only</option><option>A La Carte Only</option></select></div>
+                <button onclick="generateWeeklyForecast()" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg transition shadow-md flex items-center gap-2"><i data-lucide="calendar-check" class="w-4 h-4"></i> Generate Forecast</button>
+                <button onclick="exportWeeklyForecastCSV()" class="bg-white hover:bg-gray-50 text-teal-700 font-semibold px-6 py-3 rounded-lg border border-teal-200 transition shadow-sm flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Export to CSV</button>
+            </div>
+            <div id="weekly-forecast-results" class="mt-4"></div>
+        </div>
+    </div>
+
+    <div id="reports" class="section">
+        <div class="flex items-center justify-between mb-6"><h2 class="text-2xl font-bold text-gray-800">Reports</h2></div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="runReport('daily-sales')"><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center"><i data-lucide="receipt" class="w-5 h-5 text-accent"></i></div><h3 class="font-semibold text-gray-700">Daily Sales</h3></div><p class="text-sm text-gray-500">Meals served, waste, and participation by day</p></div>
+            <div class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="runReport('weekly-sales')"><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"><i data-lucide="calendar-week" class="w-5 h-5 text-purple-600"></i></div><h3 class="font-semibold text-gray-700">Weekly Sales</h3></div><p class="text-sm text-gray-500">Weekly participation trends and totals</p></div>
+            <div class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="runReport('waste-analysis')"><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-danger/10 rounded-lg flex items-center justify-center"><i data-lucide="trash-2" class="w-5 h-5 text-danger"></i></div><h3 class="font-semibold text-gray-700">Waste Analysis</h3></div><p class="text-sm text-gray-500">Waste trends and reduction opportunities</p></div>
+        </div>
+        <div id="report-output" class="bg-white rounded-xl shadow-sm overflow-hidden" style="display:none;">
+            <div class="p-5 border-b border-gray-100 flex items-center justify-between"><h3 class="font-semibold text-gray-700" id="report-title">Report</h3><button onclick="exportReportCSV()" class="text-sm bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition flex items-center gap-1"><i data-lucide="download" class="w-4 h-4"></i> Export CSV</button></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm" id="report-table"><thead></thead><tbody></tbody></table></div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-2xl z-[1000] transition-all transform translate-y-20 opacity-0 flex items-center gap-2">
+    <i data-lucide="check-circle" class="w-5 h-5 text-success"></i><span id="toast-msg">Saved!</span>
+</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9TQGVbpBHH2EYG-2bDBmIK5mAUM5U8yU",
+        authDomain: "cafe-debf7.firebaseapp.com",
+        projectId: "cafe-debf7",
+        storageBucket: "cafe-debf7.firebasestorage.app",
+        messagingSenderId: "247137436960",
+        appId: "1:247137436960:web:dc56a69ee591b37389c345"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let menuItems = [];
+    let dailyEntries = {};
+    let chartDaily = null;
+    let chartWaste = null;
+    let currentWeeklyForecastData = [];
+
+    const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const DAY_NUMS = {1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Friday',0:'Friday'};
+
+    let isSignUpMode = false;
+    window.toggleAuthMode = function() {
+        isSignUpMode = !isSignUpMode;
+        document.getElementById('login-title').textContent = isSignUpMode ? 'Create Account' : 'Welcome Back';
+        document.getElementById('login-subtitle').textContent = isSignUpMode ? 'Sign up to access the Cafeteria Management System' : 'Sign in to access the Cafeteria Management System';
+        document.getElementById('auth-button-text').textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggle-text').textContent = isSignUpMode ? 'Already have an account? Sign in' : 'Need an account? Sign up';
+    }
+
+    window.handleAuth = async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const errorEl = document.getElementById('auth-error');
+        try {
+            errorEl.classList.add('hidden');
+            if (isSignUpMode) { await createUserWithEmailAndPassword(auth, email, password); showToast('Account created successfully!'); } 
+            else { await signInWithEmailAndPassword(auth, email, password); showToast('Signed in successfully!'); }
+        } catch (error) { errorEl.textContent = error.message; errorEl.classList.remove('hidden'); }
+    }
+
+    window.handleSignOut = async function() { await signOut(auth); }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            await loadDataFromFirestore();
+            lucide.createIcons();
+            document.getElementById('entry-date').value = todayStr();
+            document.getElementById('dashboard-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+            updateRotationBadge();
+            renderMenuList();
+            renderDashboard();
+            renderDailyEntry();
+            showForecastWeek(1, document.getElementById('btn-week-1'));
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
+        }
+    });
+
+    async function loadDataFromFirestore() {
+        try {
+            const menuSnapshot = await getDocs(collection(db, 'menuItems'));
+            menuItems = menuSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const dailySnapshot = await getDocs(collection(db, 'dailyEntries'));
+            dailyEntries = {};
+            dailySnapshot.docs.forEach(doc => { dailyEntries[doc.id] = doc.data(); });
+            setupRealtimeListeners();
+        } catch (error) { console.error('Error loading data:', error); showToast('Error loading data from cloud'); }
+    }
+
+    function setupRealtimeListeners() {
+        onSnapshot(collection(db, 'menuItems'), (snapshot) => {
+            menuItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderMenuList(); renderDailyEntry();
+        });
+        onSnapshot(collection(db, 'dailyEntries'), (snapshot) => {
+            dailyEntries = {};
+            snapshot.docs.forEach(doc => { dailyEntries[doc.id] = doc.data(); });
+            renderDashboard(); renderDailyEntry();
+        });
+    }
+
+    window.quickSave = function() { showToast('Data is automatically synced to the cloud!'); }
+    function todayStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    window.showToast = function(msg) { const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; t.classList.remove('translate-y-20','opacity-0'); setTimeout(() => t.classList.add('translate-y-20','opacity-0'), 2500); }
+    
+    window.showSection = function(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('nav-'+id).classList.add('active');
+        if(id==='dashboard') renderDashboard();
+        if(id==='daily-entry') renderDailyEntry();
+        if(id==='forecast') showForecastWeek(1, document.getElementById('btn-week-1'));
+        lucide.createIcons();
+    }
+
+    window.toggleDarkMode = function() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        const icon = document.querySelector('#dark-mode-btn i');
+        if(icon) icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        lucide.createIcons();
+    }
+    if(localStorage.getItem('darkMode') === 'true') { document.body.classList.add('dark-mode'); }
+
+    function getRotationWeek(dateStr) {
+        const anchor = new Date('2026-08-10T12:00:00'); const d = new Date(dateStr + 'T12:00:00');
+        const diffDays = Math.floor((d - anchor) / 86400000); if(diffDays < 0) return 1;
+        return (Math.floor(diffDays / 7) % 3) + 1;
+    }
+    function getDayOfWeek(dateStr) { const d = new Date(dateStr + 'T12:00:00'); const dayIdx = d.getDay(); if(dayIdx >= 1 && dayIdx <= 5) return DAY_NUMS[dayIdx]; return null; }
+    function updateRotationBadge() { const badge = document.getElementById('rotation-badge'); const wk = getRotationWeek(todayStr()); const day = getDayOfWeek(todayStr()); badge.textContent = day ? `Week ${wk} · ${day}` : `Week ${wk} · Weekend`; badge.classList.remove('hidden'); }
+
+    window.addMenuItem = async function(e) {
+        e.preventDefault();
+        const item = { name: document.getElementById('m-item').value.trim(), mealPeriod: document.getElementById('m-period').value, category: document.getElementById('m-category').value, week: document.getElementById('m-week').value, day: document.getElementById('m-day').value, expectedServings: parseInt(document.getElementById('m-exp').value) || 0 };
+        try { await setDoc(doc(collection(db, 'menuItems')), item); document.getElementById('menu-form').reset(); showToast('Menu item added!'); } 
+        catch (error) { console.error(error); showToast('Error adding menu item'); }
+    }
+
+    window.deleteMenuItem = async function(id) {
+        if(!confirm('Delete this menu item?')) return;
+        try { await deleteDoc(doc(db, 'menuItems', id)); showToast('Item deleted'); } catch (error) { showToast('Error deleting item'); }
+    }
+
+    window.editMenuItem = function(id) {
+        const item = menuItems.find(m => m.id === id); if(!item) return;
+        document.getElementById('m-item').value = item.name; document.getElementById('m-period').value = item.mealPeriod;
+        document.getElementById('m-category').value = item.category; document.getElementById('m-week').value = item.week;
+        document.getElementById('m-day').value = item.day; document.getElementById('m-exp').value = item.expectedServings;
+        deleteMenuItem(id); window.scrollTo({top:0,behavior:'smooth'}); showToast('Edit the item and click Add to Menu');
+    }
+
+    function renderMenuList() {
+        const tbody = document.getElementById('menu-tbody');
+        const fWeek = document.getElementById('filter-week').value; const fPeriod = document.getElementById('filter-period').value;
+        let filtered = menuItems.filter(m => { if(fWeek !== 'all' && m.week !== fWeek) return false; if(fPeriod !== 'all' && m.mealPeriod !== fPeriod) return false; return true; });
+        const dayOrder = {Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5};
+        filtered.sort((a,b) => { if(a.week !== b.week) return a.week - b.week; return dayOrder[a.day] - dayOrder[b.day]; });
+        document.getElementById('menu-count').textContent = filtered.length;
+        if(filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No menu items found</td></tr>'; return; }
+        const weekColors = { 1:'bg-emerald-100 text-emerald-700 border-2 border-emerald-300', 2:'bg-amber-100 text-amber-700 border-2 border-amber-300', 3:'bg-purple-100 text-purple-700 border-2 border-purple-300' };
+        tbody.innerHTML = filtered.map(m => `<tr class="hover:bg-gray-50 transition"><td class="px-4 py-3 font-medium text-gray-800">${m.name}</td><td class="px-4 py-3 text-center"><span class="text-xs font-medium px-2 py-1 rounded-full bg-accent/10 text-accent">${m.mealPeriod}</span></td><td class="px-4 py-3 text-center text-gray-600">${m.category}</td><td class="px-4 py-3 text-center"><span class="text-xs font-bold px-3 py-1.5 rounded-full ${weekColors[m.week]||''}">Week ${m.week}</span></td><td class="px-4 py-3 text-center text-gray-600">${m.day}</td><td class="px-4 py-3 text-center font-semibold text-gray-700">${m.expectedServings}</td><td class="px-4 py-3 text-center"><button onclick="editMenuItem('${m.id}')" class="text-accent hover:text-emerald-700 mr-2"><i data-lucide="pencil" class="w-4 h-4 inline"></i></button><button onclick="deleteMenuItem('${m.id}')" class="text-danger hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button></td></tr>`).join('');
+        lucide.createIcons();
+    }
+
+    function renderDailyEntry() {
+        const dateStr = document.getElementById('entry-date').value; if(!dateStr) return;
+        const rotWeek = getRotationWeek(dateStr); const dayName = getDayOfWeek(dateStr);
+        const banner = document.getElementById('entry-week-info');
+        if(!dayName) { banner.textContent = 'Weekend — no school menu'; document.getElementById('entry-tbody').innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Weekend</td></tr>'; return; }
+        banner.textContent = `Week ${rotWeek} · ${dayName}`;
+        const dayItems = menuItems.filter(m => m.week == rotWeek && m.day === dayName);
+        const existing = dailyEntries[dateStr] || {}; const tbody = document.getElementById('entry-tbody');
+        if(dayItems.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">No menu items configured</td></tr>'; return; }
+        let rowsHtml = '';
+        dayItems.forEach(m => {
+            const ex = existing[m.id] || {};
+            rowsHtml += `<tr class="hover:bg-gray-50 transition border-b border-gray-100"><td class="px-4 py-3 font-medium text-gray-800">${m.name}</td><td class="px-4 py-3 text-center"><span class="text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">${m.mealPeriod}</span></td><td class="px-4 py-3 text-center text-gray-600">${m.category}</td><td class="px-4 py-2 text-center"><input type="number" data-id="${m.id}" data-field="planned" value="${ex.planned ?? m.expectedServings}" min="0" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${m.id}" data-field="produced" value="${ex.produced ?? ''}" min="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${m.id}" data-field="returnQty" value="${ex.returnQty ?? ''}" min="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${m.id}" data-field="served" value="${ex.served ?? ''}" readonly class="touch-input w-full text-center px-2 py-2 bg-gray-50 text-gray-700 font-semibold"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${m.id}" data-field="waste" value="${ex.waste ?? ''}" min="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-2 py-2"></td></tr>`;
+        });
+        tbody.innerHTML = rowsHtml; lucide.createIcons();
+        tbody.querySelectorAll('tr').forEach(row => { const p = row.querySelector('[data-field="produced"]'); if(p) updateServedCalc(p); });
+    }
+
+    window.updateServedCalc = function(input) {
+        const row = input.closest('tr'); if(!row) return;
+        const produced = parseFloat(row.querySelector('[data-field="produced"]').value) || 0;
+        const returnQty = parseFloat(row.querySelector('[data-field="returnQty"]').value) || 0;
+        const waste = parseFloat(row.querySelector('[data-field="waste"]').value) || 0;
+        row.querySelector('[data-field="served"]').value = Math.max(0, produced - returnQty - waste);
+    }
+
+    window.saveDailyEntry = async function() {
+        const dateStr = document.getElementById('entry-date').value; if(!dateStr) { showToast('Select a date first!'); return; }
+        const inputs = document.querySelectorAll('#entry-tbody [data-id]'); const entry = {};
+        inputs.forEach(inp => { const id = inp.dataset.id; const field = inp.dataset.field; if(!entry[id]) entry[id] = {}; entry[id][field] = (field === 'name' || field === 'mealPeriod' || field === 'category') ? inp.value : (parseInt(inp.value) || 0); });
+        try { await setDoc(doc(db, 'dailyEntries', dateStr), entry); showToast('Daily entry saved to cloud! ✅'); } catch (error) { showToast('Error saving to cloud'); }
+    }
+
+    window.addDailyItemRow = function() {
+        const tbody = document.getElementById('entry-tbody'); if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+        const manualId = 'manual_' + Date.now().toString(36);
+        const newRow = document.createElement('tr'); newRow.className = "hover:bg-gray-50 transition border-b border-gray-100 bg-yellow-50/50";
+        newRow.innerHTML = `<td class="px-4 py-2 text-center"><input type="text" data-id="${manualId}" data-field="name" placeholder="Item Name" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><select data-id="${manualId}" data-field="mealPeriod" class="touch-input w-full px-2 py-2"><option>Breakfast</option><option selected>Lunch</option><option>A La Carte</option></select></td><td class="px-4 py-2 text-center"><select data-id="${manualId}" data-field="category" class="touch-input w-full px-2 py-2"><option>Entrée</option><option>Side</option><option>Vegetable</option><option>Fruit</option><option>Milk</option></select></td><td class="px-4 py-2 text-center"><input type="number" data-id="${manualId}" data-field="planned" placeholder="0" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${manualId}" data-field="produced" placeholder="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${manualId}" data-field="returnQty" placeholder="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-2 py-2"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${manualId}" data-field="served" readonly class="touch-input w-full text-center px-2 py-2 bg-gray-50 font-semibold"></td><td class="px-4 py-2 text-center"><input type="number" data-id="${manualId}" data-field="waste" placeholder="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-2 py-2"></td>`;
+        tbody.appendChild(newRow);
+    }
+
+    window.copyFromYesterday = function() { const d = new Date(document.getElementById('entry-date').value + 'T12:00:00'); d.setDate(d.getDate() - 1); copyDayData(d.toISOString().split('T')[0]); }
+    window.copyFromLastWeek = function() { const d = new Date(document.getElementById('entry-date').value + 'T12:00:00'); d.setDate(d.getDate() - 7); copyDayData(d.toISOString().split('T')[0]); }
+    function copyDayData(sourceDate) {
+        const targetDate = document.getElementById('entry-date').value;
+        if(!dailyEntries[sourceDate]) { showToast('No data found for ' + sourceDate); return; }
+        if(!confirm(`Copy all data from ${sourceDate} to ${targetDate}?`)) return;
+        dailyEntries[targetDate] = JSON.parse(JSON.stringify(dailyEntries[sourceDate])); showToast(`Copied data!`);
+    }
+
+    function renderDashboard() {
+        const today = todayStr(); const entry = dailyEntries[today] || {}; const items = Object.values(entry);
+        let totalServed = 0, totalProduced = 0, totalWaste = 0, totalReturn = 0, totalPlanned = 0;
+        items.forEach(it => { totalServed += it.served || 0; totalProduced += it.produced || 0; totalWaste += it.waste || 0; totalReturn += it.returnQty || 0; totalPlanned += it.planned || 0; });
+        document.getElementById('stat-served').textContent = totalServed; document.getElementById('stat-produced').textContent = totalProduced;
+        document.getElementById('stat-waste').textContent = totalWaste; document.getElementById('stat-return').textContent = totalReturn;
+        document.getElementById('stat-waste-pct').textContent = totalProduced > 0 ? Math.round(totalWaste/totalProduced*100)+'%' : '0%';
+        document.getElementById('stat-participation').textContent = totalPlanned > 0 ? Math.round(totalServed/totalPlanned*100)+'%' : '0%';
+        const tbody = document.getElementById('dashboard-tbody');
+        if(items.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No production data for today yet</td></tr>'; } 
+        else { tbody.innerHTML = items.map(it => `<tr class="hover:bg-gray-50 transition"><td class="px-4 py-3 font-medium text-gray-800">${it.name||'—'}</td><td class="px-4 py-3 text-center"><span class="text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">${it.mealPeriod||'—'}</span></td><td class="px-4 py-3 text-center">${it.planned||0}</td><td class="px-4 py-3 text-center">${it.produced||0}</td><td class="px-4 py-3 text-center font-semibold text-success">${it.served||0}</td><td class="px-4 py-3 text-center text-purple-600">${it.returnQty||0}</td><td class="px-4 py-3 text-center text-danger font-medium">${it.waste||0}</td></tr>`).join(''); }
+        renderCharts();
+    }
+
+    function renderCharts() {
+        const dates = Object.keys(dailyEntries).sort().slice(-7);
+        const servedData = dates.map(d => Object.values(dailyEntries[d]).reduce((s,it)=>s+(it.served||0),0));
+        const wasteData = dates.map(d => Object.values(dailyEntries[d]).reduce((s,it)=>s+(it.waste||0),0));
+        const labels = dates.map(d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+        const ctx1 = document.getElementById('chart-daily'); if(chartDaily) chartDaily.destroy();
+        chartDaily = new Chart(ctx1, { type: 'bar', data: { labels, datasets: [{ label: 'Served', data: servedData, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 6 }] }, options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} } });
+        const ctx2 = document.getElementById('chart-waste'); if(chartWaste) chartWaste.destroy();
+        chartWaste = new Chart(ctx2, { type: 'line', data: { labels, datasets: [{ label: 'Waste', data: wasteData, borderColor: '#ef4444', fill: true, tension: 0.3 },{ label: 'Served', data: servedData, borderColor: '#22c55e', fill: true, tension: 0.3 }] }, options: { responsive:true, scales:{y:{beginAtZero:true}} } });
+    }
+
+    function getHistoricalData(itemId, week, day) {
+        const results = []; Object.keys(dailyEntries).sort().forEach(dateStr => { const entry = dailyEntries[dateStr]; if(entry[itemId] && entry[itemId].week == week && entry[itemId].day === day) results.push({ served: entry[itemId].served || 0, produced: entry[itemId].produced || 0, waste: entry[itemId].waste || 0 }); }); return results;
+    }
+
+    function forecastItem(itemId, week, day) {
+        const history = getHistoricalData(itemId, week, day); const mi = menuItems.find(m => m.id === itemId); if(!mi) return null;
+        const expectedServings = mi.expectedServings;
+        if(history.length === 0) return { name: mi.name, mealPeriod: mi.mealPeriod, expectedServings, forecast: expectedServings, recommendedProduction: Math.ceil(expectedServings * 1.05), expectedWaste: Math.round(expectedServings * 0.05), confidence: 0, dataPoints: 0 };
+        const recentN = history.slice(-10); let weightedSum = 0, weightTotal = 0;
+        recentN.forEach((h, i) => { weightedSum += h.served * (i + 1); weightTotal += (i + 1); });
+        const forecast = Math.max(0, Math.round(weightedSum / weightTotal));
+        const avgWasteRatio = recentN.reduce((s,h) => s + (h.produced > 0 ? h.waste/h.produced : 0), 0) / recentN.length;
+        const recommendedProduction = Math.ceil(forecast * 1.03 + 2); const expectedWaste = Math.round(recommendedProduction - forecast);
+        const cv = 0.5; const confidence = Math.round(Math.min(recentN.length / 10, 1) * 60 + (1 - cv) * 40);
+        return { name: mi.name, mealPeriod: mi.mealPeriod, expectedServings, forecast, recommendedProduction, expectedWaste, confidence: Math.min(95, confidence), dataPoints: history.length };
+    }
+
+    window.showForecastWeek = function(targetWeekNum, btnElement) {
+        const buttons = [{ id: 'btn-week-1', active: 'bg-emerald-500 border-emerald-300 opacity-100 scale-105', inactive: 'bg-emerald-500/40 border-transparent opacity-60' }, { id: 'btn-week-2', active: 'bg-amber-500 border-amber-300 opacity-100 scale-105', inactive: 'bg-amber-500/40 border-transparent opacity-60' }, { id: 'btn-week-3', active: 'bg-purple-500 border-purple-300 opacity-100 scale-105', inactive: 'bg-purple-500/40 border-transparent opacity-60' }];
+        buttons.forEach((b, index) => { const el = document.getElementById(b.id); el.className = `py-3 rounded-xl font-bold text-white shadow-lg transition transform border-2 ${index + 1 === targetWeekNum ? b.active : b.inactive}`; });
+        generateNextRotationForecast(targetWeekNum);
+    }
+
+    function generateNextRotationForecast(forceWeekNum = null) {
+        const container = document.getElementById('next-rotation-results'); const today = new Date();
+        const dayOfWeek = today.getDay(); const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const currentWeekMonday = new Date(today.setDate(diffToMonday)); currentWeekMonday.setHours(12, 0, 0, 0);
+        const currentRotWeek = getRotationWeek(todayStr()); const weeksToForecast = [];
+        for (let i = 1; i <= 3; i++) { const nextMonday = new Date(currentWeekMonday); nextMonday.setDate(currentWeekMonday.getDate() + (i * 7)); weeksToForecast.push({ weekNum: ((currentRotWeek + i - 1) % 3 + 1).toString(), startDate: nextMonday }); }
+        const weeksToShow = forceWeekNum ? weeksToForecast.filter(w => w.weekNum == forceWeekNum) : weeksToForecast;
+        let html = '';
+        weeksToShow.forEach(wf => {
+            let weekTotalProduce = 0, weekTotalServed = 0, weekTotalWaste = 0, daysHtml = '';
+            let weekBorderColor = 'border-emerald-400/30'; if(wf.weekNum === '2') weekBorderColor = 'border-amber-400/30'; if(wf.weekNum === '3') weekBorderColor = 'border-purple-400/30';
+            for (let i = 0; i < 5; i++) {
+                const loopDate = new Date(wf.startDate); loopDate.setDate(wf.startDate.getDate() + i); const dayName = getDayOfWeek(loopDate.toISOString().split('T')[0]); if (!dayName) continue;
+                const dayItems = menuItems.filter(m => m.week == wf.weekNum && m.day === dayName); let dayTotalProduce = 0, dayTotalServed = 0, dayTotalWaste = 0, rowsHtml = '';
+                dayItems.forEach(m => { const f = forecastItem(m.id, wf.weekNum, dayName); if (f) { dayTotalProduce += f.recommendedProduction; dayTotalServed += f.forecast; dayTotalWaste += f.expectedWaste; rowsHtml += `<tr class="hover:bg-emerald-50/50 transition border-b border-emerald-100 last:border-0"><td class="px-4 py-2.5 text-sm text-slate-800 font-medium">${m.name}</td><td class="px-4 py-2.5 text-sm text-center"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-xs font-bold">${m.mealPeriod}</span></td><td class="px-4 py-2.5 text-sm text-center font-bold text-emerald-700">${f.recommendedProduction}</td><td class="px-4 py-2.5 text-sm text-center font-bold text-amber-600">${f.forecast}</td><td class="px-4 py-2.5 text-sm text-center font-bold text-red-600">${f.expectedWaste}</td></tr>`; } });
+                weekTotalProduce += dayTotalProduce; weekTotalServed += dayTotalServed; weekTotalWaste += dayTotalWaste;
+                const dateDisplay = loopDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                daysHtml += `<div class="bg-[#fdfbf7] rounded-xl shadow-lg overflow-hidden mb-4 text-slate-800 border border-emerald-900/10"><div class="bg-emerald-100 px-4 py-3 border-b border-emerald-200 flex justify-between items-center flex-wrap gap-2"><span class="font-bold text-emerald-900 text-lg">${dayName} <span class="text-emerald-700 font-normal text-sm">(${dateDisplay})</span></span><div class="flex gap-2 text-xs font-bold flex-wrap"><span class="text-emerald-800 bg-emerald-200/60 px-2 py-1 rounded-md">Produce: ${dayTotalProduce}</span><span class="text-amber-800 bg-amber-200/60 px-2 py-1 rounded-md">Served: ${dayTotalServed}</span><span class="text-red-800 bg-red-200/60 px-2 py-1 rounded-md">Waste: ${dayTotalWaste}</span></div></div><table class="w-full text-left"><thead class="bg-emerald-50 text-xs uppercase tracking-wider text-emerald-700 font-bold"><tr><th class="px-4 py-2">Item</th><th class="px-4 py-2 text-center">Meal</th><th class="px-4 py-2 text-center">Produce</th><th class="px-4 py-2 text-center">Served</th><th class="px-4 py-2 text-center">Waste</th></tr></thead><tbody class="divide-y divide-emerald-100">${rowsHtml || '<tr><td colspan="5" class="px-4 py-3 text-center text-slate-400 text-sm italic">No items scheduled</td></tr>'}</tbody></table></div>`;
+            }
+            html += `<div class="bg-white/10 rounded-xl p-4 border ${weekBorderColor} backdrop-blur-sm"><div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3 flex-wrap gap-2"><h4 class="font-bold text-xl text-white">Week ${wf.weekNum} Summary</h4><div class="flex gap-3 text-sm font-bold flex-wrap"><span class="text-green-200 bg-green-900/30 px-3 py-1 rounded-lg">Total Produce: ${weekTotalProduce}</span><span class="text-yellow-200 bg-yellow-900/30 px-3 py-1 rounded-lg">Total Served: ${weekTotalServed}</span><span class="text-red-200 bg-red-900/30 px-3 py-1 rounded-lg">Total Waste: ${weekTotalWaste}</span></div></div>${daysHtml}</div>`;
+        });
+        container.innerHTML = html; lucide.createIcons();
+    }
+
+    window.lookupForecast = function() {
+        const week = document.getElementById('fc-week').value; const day = document.getElementById('fc-day').value; const period = document.getElementById('fc-period').value;
+        let items = menuItems.filter(m => m.week == week && m.day === day); if(period !== 'all') items = items.filter(m => m.mealPeriod === period);
+        const container = document.getElementById('lookup-results'); if(items.length === 0) { container.innerHTML = '<div class="text-gray-400 italic p-4">No items found</div>'; return; }
+        container.innerHTML = `<div class="mt-4 overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-4 py-2 text-left">Item</th><th class="px-4 py-2 text-center">Meal</th><th class="px-4 py-2 text-center">Expected</th><th class="px-4 py-2 text-center">AI Forecast</th><th class="px-4 py-2 text-center">Produce</th><th class="px-4 py-2 text-center">Exp. Waste</th></tr></thead><tbody>${items.map(m => { const f = forecastItem(m.id, week, day); return `<tr class="border-b border-gray-100"><td class="px-4 py-3 font-medium">${f.name}</td><td class="px-4 py-3 text-center">${f.mealPeriod}</td><td class="px-4 py-3 text-center">${f.expectedServings}</td><td class="px-4 py-3 text-center font-bold text-accent">${f.forecast}</td><td class="px-4 py-3 text-center font-bold text-success">${f.recommendedProduction}</td><td class="px-4 py-3 text-center text-danger">${f.expectedWaste}</td></tr>`; }).join('')}</tbody></table></div>`;
+    }
+
+    window.generateWeeklyForecast = function() {
+        const week = document.getElementById('fc-weekly-week').value; const period = document.getElementById('fc-weekly-period').value; const container = document.getElementById('weekly-forecast-results');
+        currentWeeklyForecastData = []; let weeklyTotals = { forecast: 0, produce: 0, waste: 0 };
+        DAYS.forEach(day => { let dayItems = menuItems.filter(m => m.week == week && m.day === day); if (period !== 'all') dayItems = dayItems.filter(m => m.mealPeriod === period); dayItems.forEach(m => { const f = forecastItem(m.id, week, day); if (f) { currentWeeklyForecastData.push({ day, ...f }); weeklyTotals.forecast += f.forecast; weeklyTotals.produce += f.recommendedProduction; weeklyTotals.waste += f.expectedWaste; } }); });
+        if (currentWeeklyForecastData.length === 0) { container.innerHTML = '<div class="text-gray-400 italic p-4 text-center bg-gray-50 rounded-xl">No items found</div>'; return; }
+        const dayOrder = {Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5}; currentWeeklyForecastData.sort((a,b) => dayOrder[a.day] - dayOrder[b.day]);
+        let tableHtml = `<div class="overflow-x-auto border border-gray-200 rounded-xl"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left font-semibold text-gray-600">Day</th><th class="px-4 py-3 text-left font-semibold text-gray-600">Item</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Meal</th><th class="px-4 py-3 text-center font-semibold text-yellow-600">Forecast</th><th class="px-4 py-3 text-center font-semibold text-green-600">Produce</th><th class="px-4 py-3 text-center font-semibold text-red-600">Exp. Waste</th></tr></thead><tbody>`;
+        currentWeeklyForecastData.forEach(r => { tableHtml += `<tr class="border-t border-gray-100 hover:bg-gray-50 transition"><td class="px-4 py-3 font-bold text-gray-700">${r.day}</td><td class="px-4 py-3 font-medium text-gray-800">${r.name}</td><td class="px-4 py-3 text-center">${r.mealPeriod}</td><td class="px-4 py-3 text-center font-bold text-yellow-600">${r.forecast}</td><td class="px-4 py-3 text-center font-bold text-green-600">${r.recommendedProduction}</td><td class="px-4 py-3 text-center font-bold text-red-600">${r.expectedWaste}</td></tr>`; });
+        tableHtml += `<tr class="bg-gray-100 font-bold text-gray-800 border-t-2 border-gray-300"><td class="px-4 py-3 text-right" colspan="3">WEEK ${week} TOTALS:</td><td class="px-4 py-3 text-center text-yellow-700">${weeklyTotals.forecast}</td><td class="px-4 py-3 text-center text-green-700">${weeklyTotals.produce}</td><td class="px-4 py-3 text-center text-red-700">${weeklyTotals.waste}</td></tr></tbody></table></div>`;
+        container.innerHTML = tableHtml; lucide.createIcons();
+    }
+
+    window.exportWeeklyForecastCSV = function() {
+        if (currentWeeklyForecastData.length === 0) { showToast('Generate a forecast first!'); return; }
+        const week = document.getElementById('fc-weekly-week').value; const period = document.getElementById('fc-weekly-period').value;
+        let csvContent = "Day,Item,Meal Period,Forecast,Recommended Produce,Expected Waste\n";
+        currentWeeklyForecastData.forEach(r => { csvContent += [r.day, `"${r.name}"`, r.mealPeriod, r.forecast, r.recommendedProduction, r.expectedWaste].join(",") + "\n"; });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.setAttribute("href", url); link.setAttribute("download", `Weekly_Forecast_Week${week}_${period}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); showToast('Exported!');
+    }
+
+    window.runReport = function(type) {
+        const output = document.getElementById('report-output'); const title = document.getElementById('report-title'); const thead = document.querySelector('#report-table thead'); const tbody = document.querySelector('#report-table tbody');
+        output.style.display = 'block'; const dates = Object.keys(dailyEntries).sort();
+        if(type === 'daily-sales') {
+            title.textContent = 'Daily Sales Report'; thead.innerHTML = '<tr><th class="px-4 py-2">Date</th><th class="px-4 py-2">Served</th><th class="px-4 py-2">Produced</th><th class="px-4 py-2">Waste</th><th class="px-4 py-2">Waste %</th></tr>';
+            tbody.innerHTML = dates.reverse().map(d => { const items = Object.values(dailyEntries[d]); const served = items.reduce((s,it)=>s+(it.served||0),0); const produced = items.reduce((s,it)=>s+(it.produced||0),0); const waste = items.reduce((s,it)=>s+(it.waste||0),0); return `<tr class="border-b hover:bg-gray-50"><td class="px-4 py-2">${d}</td><td class="px-4 py-2 font-semibold text-success">${served}</td><td class="px-4 py-2">${produced}</td><td class="px-4 py-2 text-danger">${waste}</td><td class="px-4 py-2">${produced?Math.round(waste/produced*100)+'%':'—'}</td></tr>`; }).join('') || '<tr><td colspan="5" class="px-4 py-4 text-center text-gray-400">No data</td></tr>';
+        } else if(type === 'weekly-sales') {
+            title.textContent = 'Weekly Sales Report'; thead.innerHTML = '<tr><th class="px-4 py-2">Week Start</th><th class="px-4 py-2">Days</th><th class="px-4 py-2">Served</th><th class="px-4 py-2">Waste</th></tr>';
+            const weeks = {}; dates.forEach(d => { const dt = new Date(d); const weekStart = new Date(dt); weekStart.setDate(dt.getDate() - dt.getDay() + 1); const key = weekStart.toISOString().split('T')[0]; if(!weeks[key]) weeks[key] = {dates:[],served:0,waste:0}; weeks[key].dates.push(d); Object.values(dailyEntries[d]).forEach(it => { weeks[key].served += it.served||0; weeks[key].waste += it.waste||0; }); });
+            tbody.innerHTML = Object.entries(weeks).reverse().map(([wk,data]) => `<tr class="border-b hover:bg-gray-50"><td class="px-4 py-2">${wk}</td><td class="px-4 py-2">${data.dates.length}</td><td class="px-4 py-2 font-semibold text-success">${data.served}</td><td class="px-4 py-2 text-danger">${data.waste}</td></tr>`).join('') || '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-400">No data</td></tr>';
+        } else if(type === 'waste-analysis') {
+            title.textContent = 'Waste Analysis Report'; thead.innerHTML = '<tr><th class="px-4 py-2">Item</th><th class="px-4 py-2">Produced</th><th class="px-4 py-2">Waste</th><th class="px-4 py-2">Waste %</th></tr>';
+            const itemStats = {}; Object.values(dailyEntries).forEach(entry => { Object.values(entry).forEach(it => { if(!itemStats[it.name]) itemStats[it.name] = {produced:0,waste:0}; itemStats[it.name].produced += it.produced||0; itemStats[it.name].waste += it.waste||0; }); });
+            const sorted = Object.entries(itemStats).filter(([_,s])=>s.produced>0).sort((a,b) => (b[1].waste/b[1].produced) - (a[1].waste/a[1].produced));
+            tbody.innerHTML = sorted.map(([name,stats]) => { const pct = Math.round(stats.waste/stats.produced*100); return `<tr class="border-b hover:bg-gray-50"><td class="px-4 py-2 font-medium">${name}</td><td class="px-4 py-2">${stats.produced}</td><td class="px-4 py-2 text-danger">${stats.waste}</td><td class="px-4 py-2 font-bold ${pct>10?'text-danger':pct>5?'text-warning':'text-success'}">${pct}%</td></tr>`; }).join('') || '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-400">No data</td></tr>';
+        }
+        lucide.createIcons(); output.scrollIntoView({behavior:'smooth'});
+    }
+
+    window.exportReportCSV = function() {
+        const table = document.getElementById('report-table'); const rows = table.querySelectorAll('tr'); let csv = [];
+        rows.forEach(row => { const cells = row.querySelectorAll('th, td'); const rowData = Array.from(cells).map(c => '"'+c.textContent.trim().replace(/"/g,'""')+'"'); if(rowData.length > 0 && rowData.some(d => d !== '""')) csv.push(rowData.join(',')); });
+        const blob = new Blob([csv.join('\n')], {type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'report_'+todayStr()+'.csv'; a.click(); URL.revokeObjectURL(url); showToast('Report exported!');
+    }
+</script>
+</body>
+</html>
