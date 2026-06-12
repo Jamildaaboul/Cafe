@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James Bowie Middle School — Cafeteria Manager</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#064e3b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Bowie Cafe">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#064e3b', secondary: '#047857', accent: '#10b981', success: '#22c55e', warning: '#f59e0b', danger: '#ef4444' } } } }
+    </script>
+    <style>
+        :root {
+            --forest:  #0a3d2e;
+            --emerald: #0d5c42;
+            --jade:    #10b981;
+            --mint:    #d1fae5;
+            --gold:    #b7973a;
+            --cream:   #fafaf7;
+            --ink:     #111827;
+            --muted:   #6b7280;
+            --border:  #e5e7eb;
+            --card-bg: #ffffff;
+            --page-bg: #eaf4ee;
+        }
+        * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--page-bg); color: var(--ink); }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+
+        /* SECTIONS */
+        .section { display: none; opacity: 0; transform: translateY(12px); transition: opacity 0.35s ease, transform 0.35s ease; }
+        .section.active { display: block; opacity: 1; transform: translateY(0); }
+
+        /* HEADER */
+        header { background: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 60%, #0f7a5a 100%); position: relative; overflow: hidden; }
+        header::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+
+        /* NAV */
+        nav { background: var(--card-bg); border-bottom: 1px solid var(--border); box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
+        .nav-btn { border-radius: 10px; transition: all 0.25s ease; color: var(--muted); font-size: 13px; }
+        .nav-btn:hover { background: var(--mint); color: var(--emerald); }
+        .nav-btn.active { background: var(--emerald); color: white; font-weight: 600; box-shadow: 0 2px 8px rgba(13,92,66,0.25); }
+
+        /* STAT CARDS */
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .stat-card::after { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
+
+        /* INPUTS */
+        .touch-input { min-height: 48px; font-size: 15px; border-radius: 12px; background: var(--page-bg); border: 1.5px solid var(--border); transition: all 0.25s ease; color: var(--ink); }
+        .touch-input:focus { background: white; border-color: var(--jade); box-shadow: 0 0 0 3px rgba(16,185,129,0.12); outline: none; }
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* BUTTONS */
+        .btn-primary { background: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 100%); color: white; border-radius: 12px; font-weight: 600; padding: 12px 24px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 3px 10px rgba(10,61,46,0.3); transition: all 0.25s ease; letter-spacing: 0.01em; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(10,61,46,0.35); filter: brightness(1.05); }
+
+        /* CARDS */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+
+        /* TABLES */
+        table { border-collapse: separate; border-spacing: 0; }
+        thead th { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; background: var(--page-bg); border-bottom: 1px solid var(--border); }
+        tbody tr { transition: background 0.15s ease; }
+        tbody tr:hover { background: #f0fdf4 !important; }
+        tbody td { border-bottom: 1px solid #f3f4f6; font-size: 13.5px; }
+
+        /* PAGE SECTION HEADERS */
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid var(--mint); }
+        .section-header h2 { font-size: 28px; color: var(--forest); }
+        .section-badge { background: var(--mint); color: var(--emerald); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: 0.02em; }
+
+        /* DARK MODE */
+        body.dark-mode { --page-bg: #1a2332; --card-bg: #243044; --border: #3a4a5c; --ink: #e8edf3; --muted: #8fa3b8; background-color: #1a2332 !important; color: #e8edf3 !important; }
+        body.dark-mode .section-header { border-color: #334155; }
+        body.dark-mode .section-header h2 { color: #e2e8f0; }
+        body.dark-mode .card { background: #243044 !important; border-color: #3a4a5c !important; }
+        body.dark-mode tbody tr:hover { background: #2a3f52 !important; }
+        body.dark-mode tbody td { border-color: #2d3f52; color: #e8edf3; }
+        body.dark-mode thead th { background: #1e2d3d !important; color: #7a93a8 !important; border-color: #3a4a5c; }
+        body.dark-mode .bg-white { background-color: #243044 !important; }
+        body.dark-mode .text-gray-800, body.dark-mode .text-slate-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-slate-600, body.dark-mode .text-gray-500 { color: #cbd5e1 !important; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-slate-200, body.dark-mode .border-gray-100 { border-color: #334155 !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode .touch-input { background-color: #2d3f52 !important; color: #e8edf3 !important; border-color: #4a5e72 !important; }
+        body.dark-mode .bg-gray-50, body.dark-mode .bg-slate-50 { background-color: #1e2d3d !important; }
+        body.dark-mode .nav-btn { color: #cbd5e1 !important; }
+        body.dark-mode .nav-btn.active { background-color: rgba(20, 184, 166, 0.2) !important; color: #14b8a6 !important; }
+        body.dark-mode .stat-card { background-color: #243044 !important; border-color: #3a4a5c !important; }
+        body.dark-mode header { background: linear-gradient(135deg, #064e3b 0%, #047857 100%) !important; }
+        body.dark-mode .btn-secondary { background-color: #334155 !important; color: #14b8a6 !important; border-color: #475569 !important; }
+        
+        /* TABLE FIXES */
+        table tbody tr, table tbody tr td, table tbody tr th { opacity: 1 !important; color: #0f172a !important; }
+        body.dark-mode table tbody tr, body.dark-mode table tbody tr td, body.dark-mode table tbody tr th { opacity: 1 !important; color: #f8fafc !important; }
+        #menu-tbody td { font-weight: 500 !important; }
+        body.dark-mode #menu-tbody td { color: #f1f5f9 !important; }
+        
+        /* LABEL & TEXT FIXES */
+        label { color: #334155; }
+        p { color: #334155; }
+        body.dark-mode label, body.dark-mode p, body.dark-mode span:not(.text-accent):not(.text-success):not(.text-danger):not(.text-warning) { color: #e2e8f0 !important; }
+
+        /* NAV DARK MODE */
+        body.dark-mode nav { background: #243044 !important; border-color: #3a4a5c !important; }
+
+        /* TABLE ROW HOVER DARK MODE */
+        body.dark-mode table tbody tr:hover { background-color: #334155 !important; }
+        body.dark-mode table thead { background-color: #1e2d3d !important; }
+        body.dark-mode table thead th { color: #94a3b8 !important; }
+        body.dark-mode .bg-gray-100 { background-color: #243044 !important; }
+        body.dark-mode .bg-gray-50 { background-color: #1e2d3d !important; }
+
+        /* FILTER SELECTS & INLINE BG-WHITE */
+        body.dark-mode select.filter-select { background-color: #2d3f52 !important; color: #e8edf3 !important; border-color: #4a5e72 !important; }
+        body.dark-mode .border-gray-100 { border-color: #334155 !important; }
+
+        /* WEEK BADGE PILLS IN DARK MODE */
+        body.dark-mode .bg-emerald-100 { background-color: rgba(6,78,59,0.5) !important; }
+        body.dark-mode .bg-amber-100 { background-color: rgba(120,53,15,0.4) !important; }
+        body.dark-mode .bg-purple-100 { background-color: rgba(88,28,135,0.4) !important; }
+
+        /* INFO BANNER DARK MODE */
+        body.dark-mode #entry-info-banner { background: rgba(16,185,129,0.1) !important; }
+
+        /* CARD/SECTION BACKGROUNDS */
+        body.dark-mode .rounded-2xl.shadow-lg, body.dark-mode .rounded-3xl { background-color: #243044; border-color: #3a4a5c; }
+        body.dark-mode .overflow-hidden { background-color: #243044; }
+
+        /* STICKY TABLE HEADERS */
+        .sticky-thead th { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px); }
+        .table-scroll { max-height: 520px; overflow-y: auto; }
+
+        /* WASTE COLOR CODING */
+        .waste-ok    { background-color: rgba(34,197,94,0.12)  !important; color: #15803d !important; font-weight: 700; }
+        .waste-warn  { background-color: rgba(245,158,11,0.15) !important; color: #b45309 !important; font-weight: 700; }
+        .waste-bad   { background-color: rgba(239,68,68,0.15)  !important; color: #dc2626 !important; font-weight: 700; }
+        body.dark-mode .waste-ok   { background-color: rgba(34,197,94,0.2)  !important; color: #4ade80 !important; }
+        body.dark-mode .waste-warn { background-color: rgba(245,158,11,0.2) !important; color: #fbbf24 !important; }
+        body.dark-mode .waste-bad  { background-color: rgba(239,68,68,0.2)  !important; color: #f87171 !important; }
+
+        /* SPARKLINES */
+        .stat-card { position: relative; overflow: hidden; }
+        .sparkline-wrap { margin-top: 8px; }
+        .trend-up   { color: #16a34a; font-size: 11px; font-weight: 600; }
+        .trend-down { color: #dc2626; font-size: 11px; font-weight: 600; }
+        .trend-flat { color: #9ca3af; font-size: 11px; font-weight: 600; }
+
+        /* HISTORY MODAL */
+        #history-modal { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px; }
+        #history-modal.open { display:flex; }
+        #history-modal-inner { background:white; border-radius:20px; width:100%; max-width:680px; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.25); }
+        body.dark-mode #history-modal-inner { background:#1e293b; }
+
+        /* CSV IMPORT */
+        .drop-zone { border:2px dashed #d1d5db; border-radius:16px; padding:32px; text-align:center; transition:all 0.2s; cursor:pointer; }
+        .drop-zone.drag-over { border-color:#10b981; background:rgba(16,185,129,0.05); }
+
+        /* SCHOOL CALENDAR */
+        .school-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .school-cal-day-hdr { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 8px 0; }
+        .school-cal-cell { min-height: 72px; border-radius: 10px; padding: 6px; cursor: pointer; transition: all 0.15s; position: relative; background: var(--card-bg); border: 1.5px solid transparent; }
+        .school-cal-cell:hover { border-color: var(--jade); background: #f0fdf4; }
+        .school-cal-cell.other-month { opacity: 0.3; cursor: default; }
+        .school-cal-cell.today { border-color: var(--jade); box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
+        .school-cal-cell.holiday { background: #fef2f2 !important; border-color: #fca5a5 !important; }
+        .school-cal-cell.weekend { background: var(--page-bg); cursor: default; opacity: 0.5; }
+        .school-cal-date { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+        .school-cal-cell.today .school-cal-date { background: var(--jade); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .holiday-badge { font-size: 9px; font-weight: 700; background: #ef4444; color: white; border-radius: 4px; padding: 1px 5px; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; }
+        .holiday-label { font-size: 10px; color: #dc2626; font-weight: 600; margin-top: 2px; line-height: 1.2; }
+        .rotation-pill { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 2px; }
+        .rotation-pill.w1 { background: #d1fae5; color: #065f46; }
+        .rotation-pill.w2 { background: #ede9fe; color: #4c1d95; }
+        .rotation-pill.w3 { background: #fef3c7; color: #92400e; }
+        body.dark-mode .school-cal-cell { background: var(--card-bg); }
+        body.dark-mode .school-cal-cell:hover { background: #1e3a2f; }
+        body.dark-mode .school-cal-cell.holiday { background: rgba(239,68,68,0.15) !important; border-color: rgba(239,68,68,0.4) !important; }
+        body.dark-mode .school-cal-cell.weekend { background: var(--page-bg); }
+        body.dark-mode .rotation-pill.w1 { background: rgba(6,95,70,0.4); color: #6ee7b7; }
+        body.dark-mode .rotation-pill.w2 { background: rgba(76,29,149,0.4); color: #c4b5fd; }
+        body.dark-mode .rotation-pill.w3 { background: rgba(146,64,14,0.4); color: #fcd34d; }
+
+        /* ROTATION CALENDAR */
+        .cal-week-header { background: linear-gradient(135deg, var(--forest), var(--emerald)); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+        .cal-grid { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--border); border-radius: 0 0 16px 16px; overflow: hidden; }
+        .cal-day-header { background: var(--page-bg); padding: 10px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+        .cal-day-header:last-child { border-right: none; }
+        .cal-cell { background: var(--card-bg); padding: 12px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 120px; vertical-align: top; }
+        .cal-cell:last-child { border-right: none; }
+        .cal-item { font-size: 11px; padding: 4px 8px; border-radius: 6px; margin-bottom: 4px; line-height: 1.3; font-weight: 500; }
+        .cal-item.breakfast { background: #d1fae5; color: #065f46; }
+        .cal-item.lunch { background: #ede9fe; color: #4c1d95; }
+        .cal-item.alacarte { background: #fef3c7; color: #92400e; }
+        body.dark-mode .cal-item.breakfast { background: rgba(6,95,70,0.35); color: #6ee7b7; }
+        body.dark-mode .cal-item.lunch { background: rgba(76,29,149,0.35); color: #c4b5fd; }
+        body.dark-mode .cal-item.alacarte { background: rgba(146,64,14,0.35); color: #fcd34d; }
+        body.dark-mode .cal-day-header { background: var(--page-bg); }
+        body.dark-mode .cal-cell { background: var(--card-bg); }
+        @media (max-width: 768px) { .cal-grid { grid-template-columns: repeat(5,1fr); } .cal-cell { padding: 6px; min-height: 80px; } .cal-item { font-size: 10px; padding: 3px 5px; } }
+
+        /* MOBILE BOTTOM NAV */
+        .mobile-nav { display: none; }
+        @media (max-width: 768px) {
+            .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: white; border-top: 1px solid #e5e7eb; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+            .mobile-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; background: none; border: none; cursor: pointer; color: #9ca3af; transition: color 0.2s; font-size: 10px; font-weight: 600; }
+            .mobile-nav-btn.active { color: #10b981; }
+            .mobile-nav-btn i { width: 22px; height: 22px; }
+            body.dark-mode .mobile-nav { background: #243044; border-color: #3a4a5c; }
+            body.dark-mode .mobile-nav-btn { color: #64748b; }
+            body.dark-mode .mobile-nav-btn.active { color: #34d399; }
+            nav { display: none; }
+            main { padding-bottom: 80px !important; }
+        }
+
+        /* EMPTY STATE */
+        .empty-state { padding: 48px 24px; text-align: center; }
+        .empty-state svg { margin: 0 auto 16px; opacity: 0.35; }
+        .empty-state h4 { font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; color: #9ca3af; }
+        body.dark-mode .empty-state h4 { color: #e2e8f0; }
+
+        /* PRINT STYLES */
+        @media print {
+            body { background: white !important; color: black !important; font-size: 11px; }
+            nav, header, #entry-info-banner, .btn-primary, button:not(.no-print-hide),
+            #dashboard, #menu-setup, #forecast, #reports, #toast { display: none !important; }
+            #daily-entry { display: block !important; opacity: 1 !important; transform: none !important; }
+            .print-header { display: block !important; }
+            .table-scroll { max-height: none !important; overflow: visible !important; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: center; }
+            th { background: #f1f5f9 !important; font-weight: 700; }
+            input[type=number] { border: none !important; background: transparent !important; box-shadow: none !important; width: 100%; text-align: center; }
+            .touch-input { border: none !important; background: transparent !important; }
+            .rounded-2xl, .shadow-lg { border-radius: 0 !important; box-shadow: none !important; }
+            .waste-ok, .waste-warn, .waste-bad { background: transparent !important; color: black !important; }
+        }
+        .print-header { display: none; }
+
+        /* ALERT BANNER */
+        .alert-item { border-left: 4px solid #ef4444; background: rgba(239,68,68,0.06); border-radius: 12px; padding: 12px 16px; }
+        .alert-item.warn { border-color: #f59e0b; background: rgba(245,158,11,0.06); }
+        body.dark-mode .alert-item { background: rgba(239,68,68,0.12); }
+        body.dark-mode .alert-item.warn { background: rgba(245,158,11,0.12); }
+
+        #login-screen { min-height: 100vh; position: relative; overflow: hidden; }
+        #login-screen::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        .login-card { position: relative; z-index: 1; background: white; border-radius: 24px; padding: 48px; width: 100%; max-width: 440px; margin: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+        #login-screen-x { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #064e3b 0%, #047857 100%); }
+        .login-card { background: white; border-radius: 28px; padding: 3.5rem; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3); max-width: 420px; width: 90%; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<div id="login-screen" style="display: none; background: linear-gradient(135deg, #0a3d2e 0%, #0d5c42 50%, #064e3b 100%);">
+    <div class="login-card">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl" style="background:linear-gradient(135deg,#0a3d2e,#10b981);">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="3" fill="rgba(255,255,255,0.3)"/></svg>
+            </div>
+            <div class="text-xs tracking-widest uppercase font-semibold mb-2" style="color:#10b981;letter-spacing:0.15em;">James Bowie Middle School</div>
+            <h2 id="login-title" class="text-3xl font-serif font-bold mb-2" style="color:#0a3d2e;">Welcome Back</h2>
+            <p id="login-subtitle" class="text-sm" style="color:#6b7280;">Sign in to Cafeteria Intelligence System</p>
+        </div>
+        <form id="login-form" onsubmit="handleAuth(event)">
+            <div class="space-y-5">
+                <div><label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label><input type="email" id="auth-email" required class="touch-input w-full px-5 py-3.5" placeholder="your@email.com"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-2">Password</label><input type="password" id="auth-password" required minlength="6" class="touch-input w-full px-5 py-3.5" placeholder="••••••••"></div>
+                <div id="auth-error" class="text-red-600 text-sm hidden bg-red-50 px-4 py-3 rounded-lg border border-red-200"></div>
+                <button type="submit" class="w-full btn-primary justify-center py-4 text-lg"><i data-lucide="log-in" class="w-5 h-5"></i><span id="auth-button-text">Sign In</span></button>
+            </div>
+        </form>
+        <div class="mt-8 text-center"><button onclick="toggleAuthMode()" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition"><span id="toggle-text">Need an account? Sign up</span></button></div>
+    </div>
+</div>
+
+<div id="main-app" style="display: none;">
+<header class="text-white shadow-2xl">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="3" fill="rgba(255,255,255,0.2)"/></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-serif font-bold leading-tight tracking-wide">James Bowie Middle School</h1>
+                <p class="text-xs tracking-widest uppercase font-medium" style="color:rgba(255,255,255,0.6);letter-spacing:0.12em;">Cafeteria Intelligence System</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            <span id="rotation-badge" class="hidden md:inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-semibold" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);"></span>
+            <button onclick="quickSave()" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i data-lucide="save" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Save</span></button>
+            <button onclick="toggleDarkMode()" id="dark-mode-btn" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i data-lucide="moon" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Dark Mode</span></button>
+            <button onclick="handleSignOut()" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition" style="background:rgba(220,38,38,0.7);border:1px solid rgba(220,38,38,0.4);" onmouseover="this.style.background='rgba(220,38,38,0.9)'" onmouseout="this.style.background='rgba(220,38,38,0.7)'"><i data-lucide="log-out" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Sign Out</span></button>
+        </div>
+    </div>
+</header>
+
+<nav class="sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-5">
+        <div class="flex gap-1 overflow-x-auto py-2.5">
+            <button onclick="showSection('dashboard')" class="nav-btn active flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-dashboard"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard</button>
+            <button onclick="showSection('menu-setup')" class="nav-btn flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-menu-setup"><i data-lucide="calendar-days" class="w-4 h-4"></i> Menu Setup</button>
+            <button onclick="showSection('daily-entry')" class="nav-btn flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-daily-entry"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Daily Entry</button>
+            <button onclick="showSection('forecast')" class="nav-btn flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-forecast"><i data-lucide="brain" class="w-4 h-4"></i> AI Forecast</button>
+            <button onclick="showSection('reports')" class="nav-btn flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-reports"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> Reports</button>
+            <button onclick="showSection('school-calendar')" class="nav-btn flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-school-calendar"><i data-lucide="calendar" class="w-4 h-4"></i> School Cal</button>
+            <button onclick="showSection('calendar')" class="nav-btn flex items-center gap-2 px-4 py-2.5 font-medium whitespace-nowrap" id="nav-calendar"><i data-lucide="calendar-days" class="w-4 h-4"></i> Menu Cal</button>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-5 py-8">
+    <div id="dashboard" class="section active">
+        <div class="section-header"><h2>Dashboard</h2><div class="text-sm font-medium text-gray-500 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-jade"></i><span id="dashboard-date"></span></div></div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            <div class="stat-card p-5" style="border-top:3px solid #10b981;">
+                <div class="flex items-start justify-between mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#d1fae5;"><i data-lucide="users" class="w-4 h-4" style="color:#059669;"></i></div></div>
+                <div class="text-2xl font-bold mb-0.5" style="color:var(--forest);" id="stat-served">0</div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted);letter-spacing:0.1em;">Served</div>
+                <div class="sparkline-wrap"><canvas id="spark-served" height="24"></canvas><span id="trend-served" class="trend-flat"></span></div>
+            </div>
+            <div class="stat-card p-5" style="border-top:3px solid #3b82f6;">
+                <div class="flex items-start justify-between mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#dbeafe;"><i data-lucide="chef-hat" class="w-4 h-4" style="color:#2563eb;"></i></div></div>
+                <div class="text-2xl font-bold mb-0.5" style="color:var(--forest);" id="stat-produced">0</div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted);letter-spacing:0.1em;">Produced</div>
+                <div class="sparkline-wrap"><canvas id="spark-produced" height="24"></canvas><span id="trend-produced" class="trend-flat"></span></div>
+            </div>
+            <div class="stat-card p-5" style="border-top:3px solid #f59e0b;">
+                <div class="flex items-start justify-between mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#fef3c7;"><i data-lucide="trash-2" class="w-4 h-4" style="color:#d97706;"></i></div></div>
+                <div class="text-2xl font-bold mb-0.5" style="color:var(--forest);" id="stat-waste">0</div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted);letter-spacing:0.1em;">Waste</div>
+                <div class="sparkline-wrap"><canvas id="spark-waste" height="24"></canvas><span id="trend-waste" class="trend-flat"></span></div>
+            </div>
+            <div class="stat-card p-5" style="border-top:3px solid #8b5cf6;">
+                <div class="flex items-start justify-between mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#ede9fe;"><i data-lucide="rotate-ccw" class="w-4 h-4" style="color:#7c3aed;"></i></div></div>
+                <div class="text-2xl font-bold mb-0.5" style="color:var(--forest);" id="stat-return">0</div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted);letter-spacing:0.1em;">Returns</div>
+                <div class="sparkline-wrap"><canvas id="spark-return" height="24"></canvas><span id="trend-return" class="trend-flat"></span></div>
+            </div>
+            <div class="stat-card p-5" style="border-top:3px solid #ef4444;">
+                <div class="flex items-start justify-between mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#fee2e2;"><i data-lucide="percent" class="w-4 h-4" style="color:#dc2626;"></i></div></div>
+                <div class="text-2xl font-bold mb-0.5" style="color:var(--forest);" id="stat-waste-pct">0%</div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted);letter-spacing:0.1em;">Waste %</div>
+                <div class="sparkline-wrap"><canvas id="spark-waste-pct" height="24"></canvas><span id="trend-waste-pct" class="trend-flat"></span></div>
+            </div>
+            <div class="stat-card p-5" style="border-top:3px solid #10b981;">
+                <div class="flex items-start justify-between mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#d1fae5;"><i data-lucide="trending-up" class="w-4 h-4" style="color:#059669;"></i></div></div>
+                <div class="text-2xl font-bold mb-0.5" style="color:var(--forest);" id="stat-participation">0%</div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted);letter-spacing:0.1em;">Participation</div>
+                <div class="sparkline-wrap"><canvas id="spark-participation" height="24"></canvas><span id="trend-participation" class="trend-flat"></span></div>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5 mb-8">
+            <div class="card p-6"><div class="flex items-center gap-3 mb-5"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#d1fae5;"><i data-lucide="bar-chart-2" class="w-4 h-4" style="color:#059669;"></i></div><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Daily Meal Counts</h3><span class="ml-auto text-xs font-medium px-2 py-1 rounded-full" style="background:#f0fdf4;color:#059669;">Last 7 Days</span></div><canvas id="chart-daily" height="200"></canvas></div>
+            <div class="card p-6"><div class="flex items-center gap-3 mb-5"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#fef3c7;"><i data-lucide="trending-down" class="w-4 h-4" style="color:#d97706;"></i></div><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Waste vs Served Trend</h3><span class="ml-auto text-xs font-medium px-2 py-1 rounded-full" style="background:#fff7ed;color:#d97706;">Monitoring</span></div><canvas id="chart-waste" height="200"></canvas></div>
+        </div>
+        <div id="waste-alerts-container" class="hidden mb-6"></div>
+
+        <div class="card overflow-hidden">
+            <div class="p-6 border-b flex items-center gap-3" style="border-color:var(--border);"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#d1fae5;"><i data-lucide="clipboard-check" class="w-4 h-4" style="color:#059669;"></i></div><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Today's Production Summary</h3></div>
+            <div class="table-scroll overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50 sticky-thead"><tr><th class="px-6 py-4 text-left font-semibold text-gray-600">Item</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Meal</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Planned</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Produced</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Served</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Return</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Waste</th></tr></thead><tbody id="dashboard-tbody"><tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">No production data for today yet</td></tr></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="menu-setup" class="section">
+        <div class="section-header"><h2>Menu Setup</h2><span class="section-badge">3-Week Rotating Cycle</span></div>
+        <div class="card p-7 mb-6">
+            <div class="flex items-center gap-3 mb-6"><div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#d1fae5;"><i data-lucide="plus-circle" class="w-5 h-5" style="color:#059669;"></i></div><h3 class="font-serif font-semibold text-lg" style="color:var(--forest);">Add New Menu Item</h3></div>
+            <form id="menu-form" onsubmit="addMenuItem(event)">
+                <div class="grid md:grid-cols-3 gap-5 mb-5">
+                    <div><label class="block text-sm font-medium text-gray-600 mb-2">Item Name</label><input type="text" id="m-item" required class="touch-input w-full px-5 py-3.5"></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-2">Meal Period</label><select id="m-period" class="touch-input w-full px-5 py-3.5"><option>Breakfast</option><option>Lunch</option><option>A La Carte</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-2">Category</label><select id="m-category" class="touch-input w-full px-5 py-3.5"><option>Entrée</option><option>Side</option><option>Vegetable</option><option>Fruit</option><option>Milk</option><option>Condiment</option><option>Protein</option><option>Juice</option><option>Grain</option></select></div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-5 mb-6">
+                    <div><label class="block text-sm font-medium text-gray-600 mb-2">Rotation Week</label><select id="m-week" class="touch-input w-full px-5 py-3.5"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-2">Day Served</label><select id="m-day" class="touch-input w-full px-5 py-3.5"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-600 mb-2">Expected Servings</label><input type="number" id="m-exp" min="1" required class="touch-input w-full px-5 py-3.5"></div>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                <button type="submit" class="btn-primary text-base">Add to Menu</button>
+                <button type="button" onclick="openCsvModal()" class="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold px-5 py-3 rounded-xl transition shadow-lg text-sm"><i data-lucide="upload" class="w-4 h-4"></i> Bulk Import CSV</button>
+                <button type="button" onclick="deleteZeroServingItems()" class="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-3 rounded-xl transition shadow-lg text-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Clean Up Bad Imports</button>
+            </div>
+            </form>
+        </div>
+        <div class="card p-4 mb-5 flex flex-wrap gap-3 items-center">
+            <span class="text-sm font-medium text-gray-600">Filter:</span>
+            <select id="filter-week" oninput="renderMenuList()" class="text-sm border border-gray-200 rounded-xl px-4 py-2.5 filter-select"><option value="all">All Weeks</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select>
+            <select id="filter-period" oninput="renderMenuList()" class="text-sm border border-gray-200 rounded-xl px-4 py-2.5 filter-select"><option value="all">All Periods</option><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="A La Carte">A La Carte</option></select>
+        </div>
+        <div class="card overflow-hidden">
+            <div class="p-5 border-b flex items-center justify-between" style="border-color:var(--border);"><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Current Menu Items <span class="text-sm font-normal ml-1" style="color:var(--jade);">(<span id="menu-count">0</span> items)</span></h3></div>
+            <div class="table-scroll overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50 sticky-thead"><tr><th class="px-6 py-4 text-left font-semibold text-gray-600">Item Name</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Meal</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Category</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Week</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Day</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Expected</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Actions</th></tr></thead><tbody id="menu-tbody"><tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">No menu items added yet</td></tr></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="daily-entry" class="section">
+        <div class="section-header flex-wrap gap-4">
+            <h2>Daily Entry</h2>
+            <div class="flex items-center gap-3 flex-wrap">
+                <input type="date" id="entry-date" onchange="renderDailyEntry()" class="touch-input border border-gray-200 rounded-xl px-5 py-3">
+                <button onclick="saveDailyEntry()" class="bg-success hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Save Entry</button>
+                <button type="button" onclick="addDailyItemRow()" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add Item Sold</button>
+                <button type="button" onclick="copyFromYesterday()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-3 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Copy Yesterday</button>
+                <button type="button" onclick="copyFromLastWeek()" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold px-5 py-3 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Copy Last Week</button>
+                <button type="button" onclick="printProductionSheet()" class="bg-gray-700 hover:bg-gray-800 text-white font-semibold px-5 py-3 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="printer" class="w-4 h-4"></i> Print Sheet</button>
+            </div>
+        </div>
+        <div class="print-header mb-6">
+            <div class="flex items-center justify-between border-b-2 border-gray-800 pb-3 mb-4">
+                <div><div class="text-2xl font-bold">James Bowie Middle School</div><div class="text-base text-gray-600">Cafeteria Daily Production Sheet</div></div>
+                <div class="text-right"><div class="font-bold text-lg" id="print-date-label"></div><div class="text-sm text-gray-600" id="print-week-label"></div></div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 text-sm mb-2">
+                <div class="border border-gray-300 rounded p-2"><div class="text-xs text-gray-500 uppercase font-semibold mb-1">Prepared By</div><div style="border-bottom:1px solid #999;min-height:24px"></div></div>
+                <div class="border border-gray-300 rounded p-2"><div class="text-xs text-gray-500 uppercase font-semibold mb-1">Start Time</div><div style="border-bottom:1px solid #999;min-height:24px"></div></div>
+                <div class="border border-gray-300 rounded p-2"><div class="text-xs text-gray-500 uppercase font-semibold mb-1">End Time</div><div style="border-bottom:1px solid #999;min-height:24px"></div></div>
+                <div class="border border-gray-300 rounded p-2"><div class="text-xs text-gray-500 uppercase font-semibold mb-1">Supervisor Sign-off</div><div style="border-bottom:1px solid #999;min-height:24px"></div></div>
+            </div>
+        </div>
+        <div id="entry-info-banner" class="rounded-2xl p-5 mb-6 flex items-center justify-between gap-4 flex-wrap" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;"><div class="flex items-center gap-4"><i data-lucide="info" class="w-6 h-6 text-accent"></i><div><span class="font-medium text-gray-700 text-lg" id="entry-week-info">Select a date to see menu items</span></div></div><div id="entry-week-badge" class="hidden items-center gap-3"></div></div>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="table-scroll overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50 sticky-thead"><tr><th class="px-6 py-4 text-left font-semibold text-gray-600">Item</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Meal</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Category</th><th class="px-6 py-4 text-center font-semibold text-gray-600 min-w-[100px]">Planned</th><th class="px-6 py-4 text-center font-semibold text-gray-600 min-w-[100px]">Produced</th><th class="px-6 py-4 text-center font-semibold text-gray-600 min-w-[100px]">Return</th><th class="px-6 py-4 text-center font-semibold text-gray-600 min-w-[110px]">Students Served <span class="text-xs font-normal text-gray-400">(Auto)</span></th><th class="px-6 py-4 text-center font-semibold text-gray-600 min-w-[100px]">Waste</th></tr></thead><tbody id="entry-tbody"><tr><td colspan="8" class="px-6 py-12 text-center text-gray-400">Select a date to load menu items</td></tr></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="forecast" class="section">
+        <div class="section-header"><h2>AI Forecast</h2><button onclick="showForecastWeek(1, document.getElementById('btn-week-1'))" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Forecast</button></div>
+        <div class="bg-gradient-to-br from-emerald-800 via-teal-700 to-emerald-900 rounded-3xl p-8 mb-8 text-white shadow-2xl">
+            <div class="flex items-center gap-4 mb-8"><div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md"><i data-lucide="calendar-range" class="w-7 h-7"></i></div><div><h3 class="font-serif font-bold text-2xl">Next 3-Week Cycle Lookahead</h3><p class="text-emerald-200 text-base">Select a week to view daily production estimates</p></div></div>
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <button onclick="showForecastWeek(1, this)" id="btn-week-1" class="py-4 rounded-2xl font-bold text-white shadow-xl transition transform scale-105 border-2 bg-emerald-500 border-emerald-300 backdrop-blur-md">Week 1</button>
+                <button onclick="showForecastWeek(2, this)" id="btn-week-2" class="py-4 rounded-2xl font-bold text-white shadow-xl transition transform hover:scale-105 border-2 bg-amber-500/40 border-transparent opacity-60 hover:opacity-100 backdrop-blur-md">Week 2</button>
+                <button onclick="showForecastWeek(3, this)" id="btn-week-3" class="py-4 rounded-2xl font-bold text-white shadow-xl transition transform hover:scale-105 border-2 bg-purple-500/40 border-transparent opacity-60 hover:opacity-100 backdrop-blur-md">Week 3</button>
+            </div>
+            <div id="next-rotation-results" class="space-y-6"></div>
+        </div>
+        <div class="card p-7 mb-6">
+            <h3 class="font-serif font-semibold text-gray-700 mb-6 text-lg">Look Up a Specific Day</h3>
+            <div class="grid md:grid-cols-3 gap-5 mb-6">
+                <div><label class="block text-sm font-medium text-gray-600 mb-2">Rotation Week</label><select id="fc-week" class="touch-input w-full px-5 py-3.5"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-600 mb-2">Day</label><select id="fc-day" class="touch-input w-full px-5 py-3.5"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-600 mb-2">Meal Period</label><select id="fc-period" class="touch-input w-full px-5 py-3.5"><option value="all">All Periods</option><option>Breakfast</option><option>Lunch</option><option>A La Carte</option></select></div>
+            </div>
+            <button onclick="lookupForecast()" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-8 py-4 rounded-xl transition shadow-lg">Generate Forecast</button>
+            <div id="lookup-results" class="mt-6"></div>
+        </div>
+        <div class="card p-7 mb-6">
+            <h3 class="font-serif font-semibold text-gray-700 mb-3 flex items-center gap-3 text-lg"><i data-lucide="calendar-range" class="w-6 h-6 text-accent"></i> Full Week Forecast</h3>
+            <p class="text-sm text-gray-500 mb-6">Generate production numbers for all 5 days of a specific rotation week.</p>
+            <div class="flex flex-wrap gap-5 items-end mb-6">
+                <div><label class="block text-sm font-medium text-gray-600 mb-2">Rotation Week</label><select id="fc-weekly-week" class="touch-input w-full px-5 py-3.5"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-600 mb-2">Meal Period</label><select id="fc-weekly-period" class="touch-input w-full px-5 py-3.5"><option value="all">All Meals</option><option>Breakfast Only</option><option>Lunch Only</option><option>A La Carte Only</option></select></div>
+                <button onclick="generateWeeklyForecast()" class="bg-accent hover:bg-emerald-600 text-white font-semibold px-8 py-4 rounded-xl transition shadow-lg flex items-center gap-2"><i data-lucide="calendar-check" class="w-5 h-5"></i> Generate Forecast</button>
+                <button onclick="exportWeeklyForecastCSV()" class="bg-white hover:bg-gray-50 text-teal-700 font-semibold px-8 py-4 rounded-xl border-2 border-teal-200 transition shadow-md flex items-center gap-2"><i data-lucide="download" class="w-5 h-5"></i> Export to CSV</button>
+            </div>
+            <div id="weekly-forecast-results" class="mt-6"></div>
+        </div>
+    </div>
+
+    <div id="school-calendar" class="section">
+        <div class="section-header">
+            <h2>School Calendar</h2>
+            <div class="flex items-center gap-3 flex-wrap">
+                <button onclick="schoolCalPrev()" class="px-3 py-2 rounded-xl border transition text-sm font-semibold" style="border-color:var(--border);color:var(--ink);" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background=''"><i data-lucide="chevron-left" class="w-4 h-4 inline"></i></button>
+                <span id="school-cal-month-label" class="font-serif font-bold text-lg" style="color:var(--forest);min-width:160px;text-align:center;"></span>
+                <button onclick="schoolCalNext()" class="px-3 py-2 rounded-xl border transition text-sm font-semibold" style="border-color:var(--border);color:var(--ink);" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background=''"><i data-lucide="chevron-right" class="w-4 h-4 inline"></i></button>
+                <button onclick="schoolCalToday()" class="px-4 py-2 rounded-xl text-sm font-semibold transition" style="background:var(--emerald);color:white;">Today</button>
+            </div>
+        </div>
+        <!-- Quick add bar -->
+        <div class="card p-5 mb-6 flex flex-wrap gap-4 items-end">
+            <div><label class="block text-xs font-semibold uppercase tracking-wide mb-1" style="color:var(--muted);">Date</label><input type="date" id="sc-date-input" class="touch-input px-4 py-2.5 text-sm" style="min-height:unset;"></div>
+            <div><label class="block text-xs font-semibold uppercase tracking-wide mb-1" style="color:var(--muted);">Holiday Name</label><input type="text" id="sc-label-input" placeholder="e.g. Thanksgiving Break" class="touch-input px-4 py-2.5 text-sm" style="min-height:unset;width:260px;"></div>
+            <button onclick="addHoliday()" class="btn-primary text-sm px-5 py-2.5"><i data-lucide="plus" class="w-4 h-4"></i> Mark Holiday</button>
+        </div>
+        <!-- Calendar grid -->
+        <div class="card p-5 mb-6">
+            <div class="school-cal-grid mb-2" id="school-cal-headers"></div>
+            <div class="school-cal-grid" id="school-cal-grid"></div>
+        </div>
+        <!-- Holiday list -->
+        <div class="card p-5">
+            <div class="flex items-center justify-between mb-4"><h3 class="font-serif font-semibold" style="color:var(--forest);">Marked Holidays</h3><span id="holiday-count" class="text-xs font-semibold px-3 py-1 rounded-full" style="background:#fee2e2;color:#dc2626;"></span></div>
+            <div id="holiday-list"></div>
+        </div>
+    </div>
+
+    <div id="calendar" class="section">
+        <div class="section-header">
+            <h2>Rotation Calendar</h2>
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-2 text-xs font-semibold"><span class="w-3 h-3 rounded-full inline-block" style="background:#059669;"></span>Breakfast</div>
+                <div class="flex items-center gap-2 text-xs font-semibold"><span class="w-3 h-3 rounded-full inline-block" style="background:#7c3aed;"></span>Lunch</div>
+                <div class="flex items-center gap-2 text-xs font-semibold"><span class="w-3 h-3 rounded-full inline-block" style="background:#d97706;"></span>A La Carte</div>
+                <select id="cal-week-filter" oninput="renderCalendar()" class="text-sm border rounded-xl px-3 py-2" style="border-color:var(--border);background:var(--card-bg);color:var(--ink);">
+                    <option value="all">All Weeks</option>
+                    <option value="1">Week 1</option>
+                    <option value="2">Week 2</option>
+                    <option value="3">Week 3</option>
+                </select>
+                <select id="cal-period-filter" oninput="renderCalendar()" class="text-sm border rounded-xl px-3 py-2" style="border-color:var(--border);background:var(--card-bg);color:var(--ink);">
+                    <option value="all">All Periods</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="A La Carte">A La Carte</option>
+                </select>
+            </div>
+        </div>
+        <div id="calendar-grid" class="space-y-8"></div>
+    </div>
+
+    <div id="reports" class="section">
+        <div class="section-header"><h2>Reports</h2></div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="card p-6 hover:shadow-xl transition cursor-pointer group" onclick="runReport('daily-sales')" style="border-top:3px solid #10b981;"><div class="flex items-center gap-4 mb-4"><div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition" style="background:#d1fae5;"><i data-lucide="receipt" class="w-6 h-6" style="color:#059669;"></i></div><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Daily Sales</h3></div><p class="text-sm" style="color:var(--muted);">Meals served, waste, and participation by day</p></div>
+            <div class="card p-6 hover:shadow-xl transition cursor-pointer group" onclick="runReport('weekly-sales')" style="border-top:3px solid #8b5cf6;"><div class="flex items-center gap-4 mb-4"><div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition" style="background:#ede9fe;"><i data-lucide="calendar-week" class="w-6 h-6" style="color:#7c3aed;"></i></div><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Weekly Sales</h3></div><p class="text-sm" style="color:var(--muted);">Weekly participation trends and totals</p></div>
+            <div class="card p-6 hover:shadow-xl transition cursor-pointer group" onclick="runReport('waste-analysis')" style="border-top:3px solid #ef4444;"><div class="flex items-center gap-4 mb-4"><div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition" style="background:#fee2e2;"><i data-lucide="trash-2" class="w-6 h-6" style="color:#dc2626;"></i></div><h3 class="font-serif font-semibold text-base" style="color:var(--forest);">Waste Analysis</h3></div><p class="text-sm" style="color:var(--muted);">Waste trends and reduction opportunities</p></div>
+        </div>
+        <div id="report-output" class="card overflow-hidden" style="display:none;">
+            <div class="p-5 border-b flex items-center justify-between" style="border-color:var(--border);"><h3 class="font-serif font-semibold text-base" style="color:var(--forest);" id="report-title">Report</h3><button onclick="exportReportCSV()" class="text-sm px-4 py-2 rounded-xl transition flex items-center gap-2" style="background:var(--page-bg);border:1px solid var(--border);color:var(--muted);" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='var(--page-bg)'"><i data-lucide="download" class="w-4 h-4"></i> Export CSV</button></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm" id="report-table"><thead></thead><tbody></tbody></table></div>
+        </div>
+    </div>
+</main>
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav" id="mobile-nav">
+    <button class="mobile-nav-btn active" id="mob-dashboard" onclick="showSection('dashboard')">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-menu-setup" onclick="showSection('menu-setup')">
+        <i data-lucide="calendar-days"></i><span>Menu</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-daily-entry" onclick="showSection('daily-entry')">
+        <i data-lucide="clipboard-list"></i><span>Daily</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-forecast" onclick="showSection('forecast')">
+        <i data-lucide="brain"></i><span>Forecast</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-reports" onclick="showSection('reports')">
+        <i data-lucide="bar-chart-3"></i><span>Reports</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-school-calendar" onclick="showSection('school-calendar')">
+        <i data-lucide="calendar"></i><span>School Cal</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-calendar" onclick="showSection('calendar')">
+        <i data-lucide="calendar-days"></i><span>Menu Cal</span>
+    </button>
+</nav>
+
+</div>
+
+<!-- ITEM HISTORY MODAL -->
+<div id="history-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px;">
+  <div id="history-modal-inner" style="background:white;border-radius:20px;width:100%;max-width:680px;max-height:85vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,0.25);">
+    <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+      <div><h3 class="font-serif font-bold text-gray-800 text-xl" id="history-modal-title">Item History</h3><p class="text-xs text-gray-500 mt-0.5" id="history-modal-sub"></p></div>
+      <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <div class="p-6"><canvas id="history-chart" height="160"></canvas></div>
+    <div class="px-6 pb-6"><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left font-semibold text-gray-600">Date</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Planned</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Produced</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Served</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Waste</th><th class="px-4 py-3 text-center font-semibold text-gray-600">Waste %</th></tr></thead><tbody id="history-tbody"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- CSV IMPORT MODAL -->
+<div id="csv-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:20px;width:100%;max-width:560px;box-shadow:0 25px 60px rgba(0,0,0,0.25);">
+    <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+      <div><h3 class="font-serif font-bold text-gray-800 text-xl">Bulk Import Menu Items</h3><p class="text-xs text-gray-500 mt-0.5">Upload a CSV to add multiple items at once</p></div>
+      <button onclick="closeCsvModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-sm text-emerald-800">
+        <div class="font-semibold mb-1">Required CSV columns (in order):</div>
+        <code class="text-xs">name, mealPeriod, category, week, day, expectedServings</code>
+        <div class="text-xs text-emerald-600 mt-2">mealPeriod: Breakfast / Lunch / A La Carte | week: 1, 2, or 3 | day: Monday-Friday</div>
+      </div>
+      <div class="drop-zone" id="csv-drop-zone" onclick="document.getElementById('csv-file-input').click()">
+        <i data-lucide="upload-cloud" class="w-10 h-10 text-gray-400 mx-auto mb-3"></i>
+        <div class="text-gray-600 font-medium">Drop your CSV here or click to browse</div>
+        <div class="text-xs text-gray-400 mt-1">Only .csv files</div>
+        <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCsvFile(this.files[0])">
+      </div>
+      <div id="csv-preview" class="hidden">
+        <div class="flex items-center justify-between mb-3"><span class="text-sm font-semibold text-gray-700" id="csv-preview-count"></span><button onclick="document.getElementById('csv-preview').classList.add('hidden')" class="text-xs text-gray-400 hover:text-gray-600">Clear</button></div>
+        <div class="max-h-48 overflow-y-auto border border-gray-200 rounded-xl"><table class="w-full text-xs"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-3 py-2 text-left">Name</th><th class="px-3 py-2">Meal</th><th class="px-3 py-2">Week</th><th class="px-3 py-2">Day</th><th class="px-3 py-2">Exp.</th></tr></thead><tbody id="csv-preview-tbody"></tbody></table></div>
+        <button onclick="importCsvItems()" class="btn-primary w-full justify-center mt-4 py-3">Import <span id="csv-import-count"></span> Items</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white px-7 py-4 rounded-2xl shadow-2xl z-[1000] transition-all transform translate-y-20 opacity-0 flex items-center gap-3 border border-gray-700">
+    <i data-lucide="check-circle" class="w-6 h-6 text-success"></i><span id="toast-msg" class="font-medium">Saved!</span>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9TQGVbpBHH2EYG-2bDBmIK5mAUM5U8yU",
+        authDomain: "cafe-debf7.firebaseapp.com",
+        projectId: "cafe-debf7",
+        storageBucket: "cafe-debf7.firebasestorage.app",
+        messagingSenderId: "247137436960",
+        appId: "1:247137436960:web:dc56a69ee591b37389c345"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let menuItems = [];
+    let dailyEntries = {};
+    let chartDaily = null;
+    let chartWaste = null;
+    let currentWeeklyForecastData = [];
+
+    const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const DAY_NUMS = {1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Friday',0:'Friday'};
+
+    let isSignUpMode = false;
+    window.toggleAuthMode = function() {
+        isSignUpMode = !isSignUpMode;
+        document.getElementById('login-title').textContent = isSignUpMode ? 'Create Account' : 'Welcome Back';
+        document.getElementById('login-subtitle').textContent = isSignUpMode ? 'Sign up to access the Cafeteria Management System' : 'Sign in to access the Cafeteria Management System';
+        document.getElementById('auth-button-text').textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggle-text').textContent = isSignUpMode ? 'Already have an account? Sign in' : 'Need an account? Sign up';
+    }
+
+    window.handleAuth = async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const errorEl = document.getElementById('auth-error');
+        try {
+            errorEl.classList.add('hidden');
+            if (isSignUpMode) { await createUserWithEmailAndPassword(auth, email, password); showToast('Account created successfully!'); } 
+            else { await signInWithEmailAndPassword(auth, email, password); showToast('Signed in successfully!'); }
+        } catch (error) { errorEl.textContent = error.message; errorEl.classList.remove('hidden'); }
+    }
+
+    window.handleSignOut = async function() { await signOut(auth); }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('entry-date').value = todayStr();
+            document.getElementById('dashboard-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+            updateRotationBadge();
+            await loadDataFromFirestore();
+            lucide.createIcons();
+            renderMenuList();
+            renderDashboard();
+            renderDailyEntry();
+            showForecastWeek(1, document.getElementById('btn-week-1'));
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
+        }
+    });
+
+    async function loadDataFromFirestore() {
+        try {
+            console.log('loadDataFromFirestore: starting...');
+            const menuSnapshot = await getDocs(collection(db, 'menuItems'));
+            menuItems = menuSnapshot.docs.map(doc => {
+                const data = doc.data();
+                data.week = String(data.week);
+                return { id: doc.id, ...data };
+            });
+            console.log('loadDataFromFirestore: loaded', menuItems.length, 'menu items');
+            const dailySnapshot = await getDocs(collection(db, 'dailyEntries'));
+            dailyEntries = {};
+            dailySnapshot.docs.forEach(doc => { dailyEntries[doc.id] = doc.data(); });
+            console.log('loadDataFromFirestore: loaded', Object.keys(dailyEntries).length, 'daily entries');
+            await loadHolidays();
+            setupRealtimeListeners();
+        } catch (error) { console.error('Error loading data:', error); showToast('Error loading data from cloud'); }
+    }
+
+    function setupRealtimeListeners() {
+        onSnapshot(collection(db, 'menuItems'), (snapshot) => {
+            menuItems = snapshot.docs.map(doc => {
+                const data = doc.data();
+                data.week = String(data.week);
+                return { id: doc.id, ...data };
+            });
+            // data-only update: UI re-renders on user interaction, not on every snapshot
+        });
+        onSnapshot(collection(db, 'dailyEntries'), (snapshot) => {
+            dailyEntries = {};
+            snapshot.docs.forEach(doc => { dailyEntries[doc.id] = doc.data(); });
+            // data-only update
+        });
+    }
+
+    window.quickSave = function() { showToast('Data is automatically synced to the cloud!'); }
+    function todayStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    window.showToast = function(msg) { const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; t.classList.remove('translate-y-20','opacity-0'); setTimeout(() => t.classList.add('translate-y-20','opacity-0'), 3000); }
+    
+    window.showSection = function(id) {
+        document.querySelectorAll('.section').forEach(s => {
+            if(s.classList.contains('active')) {
+                s.style.opacity = '0';
+                s.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    s.classList.remove('active');
+                    document.getElementById(id).classList.add('active');
+                    setTimeout(() => {
+                        document.getElementById(id).style.opacity = '1';
+                        document.getElementById(id).style.transform = 'translateY(0)';
+                    }, 50);
+                }, 300);
+            } else {
+                s.classList.remove('active');
+            }
+        });
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('nav-'+id).classList.add('active');
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+        const mobBtn = document.getElementById('mob-'+id); if(mobBtn) mobBtn.classList.add('active');
+        if(id==='dashboard') renderDashboard();
+        if(id==='menu-setup') setTimeout(() => renderMenuList(), 350);
+        if(id==='calendar') setTimeout(() => renderCalendar(), 350);
+        if(id==='school-calendar') setTimeout(() => renderSchoolCalendar(), 350);
+        if(id==='daily-entry') renderDailyEntry();
+        if(id==='forecast') showForecastWeek(1, document.getElementById('btn-week-1'));
+        lucide.createIcons();
+    }
+
+    window.toggleDarkMode = function() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        const icon = document.querySelector('#dark-mode-btn i');
+        if(icon) icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        lucide.createIcons();
+    }
+    if(localStorage.getItem('darkMode') === 'true') { 
+        document.body.classList.add('dark-mode'); 
+        // Update icon after lucide initializes
+        document.addEventListener('DOMContentLoaded', () => {
+            const icon = document.querySelector('#dark-mode-btn i');
+            if(icon) { icon.setAttribute('data-lucide', 'sun'); lucide.createIcons(); }
+        });
+    }
+
+    function getRotationWeek(dateStr) {
+        const anchor = new Date('2026-08-10T12:00:00'); const d = new Date(dateStr + 'T12:00:00');
+        const diffDays = Math.floor((d - anchor) / 86400000); if(diffDays < 0) return 1;
+        return (Math.floor(diffDays / 7) % 3) + 1;
+    }
+    function getDayOfWeek(dateStr) { const d = new Date(dateStr + 'T12:00:00'); const dayIdx = d.getDay(); if(dayIdx >= 1 && dayIdx <= 5) return DAY_NUMS[dayIdx]; return null; }
+    function updateRotationBadge() { const badge = document.getElementById('rotation-badge'); const wk = getRotationWeek(todayStr()); const day = getDayOfWeek(todayStr()); badge.textContent = day ? `Week ${wk} · ${day}` : `Week ${wk} · Weekend`; badge.classList.remove('hidden'); }
+
+    window.addMenuItem = async function(e) {
+        e.preventDefault();
+        const item = { name: document.getElementById('m-item').value.trim(), mealPeriod: document.getElementById('m-period').value, category: document.getElementById('m-category').value, week: document.getElementById('m-week').value, day: document.getElementById('m-day').value, expectedServings: parseInt(document.getElementById('m-exp').value) || 0 };
+        try { await setDoc(doc(collection(db, 'menuItems')), item); document.getElementById('menu-form').reset(); showToast('Menu item added!'); } 
+        catch (error) { console.error(error); showToast('Error adding menu item'); }
+    }
+
+    window.deleteMenuItem = async function(id) {
+        if(!confirm('Delete this menu item?')) return;
+        try { await deleteDoc(doc(db, 'menuItems', id)); showToast('Item deleted'); } catch (error) { showToast('Error deleting item'); }
+    }
+
+    window.editMenuItem = function(id) {
+        const item = menuItems.find(m => m.id === id); if(!item) return;
+        document.getElementById('m-item').value = item.name; document.getElementById('m-period').value = item.mealPeriod;
+        document.getElementById('m-category').value = item.category; document.getElementById('m-week').value = item.week;
+        document.getElementById('m-day').value = item.day; document.getElementById('m-exp').value = item.expectedServings;
+        deleteMenuItem(id); window.scrollTo({top:0,behavior:'smooth'}); showToast('Edit the item and click Add to Menu');
+    }
+
+    window.renderMenuList = function() {
+        const tbody = document.getElementById('menu-tbody');
+        const fWeek = document.getElementById('filter-week').value; const fPeriod = document.getElementById('filter-period').value;
+        console.log('renderMenuList called - fWeek:', fWeek, 'fPeriod:', fPeriod, 'total items:', menuItems.length);
+        let filtered = menuItems.filter(m => { if(fWeek !== 'all' && m.week !== fWeek) return false; if(fPeriod !== 'all' && m.mealPeriod !== fPeriod) return false; return true; });
+        const dayOrder = {Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5};
+        filtered.sort((a,b) => { if(a.week !== b.week) return Number(a.week) - Number(b.week); return dayOrder[a.day] - dayOrder[b.day]; });
+        document.getElementById('menu-count').textContent = filtered.length;
+        if(filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">'+'<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#10b981" stroke-width="2"/><path d="M20 32h24M32 20v24" stroke="#10b981" stroke-width="2" stroke-linecap="round"/><circle cx="32" cy="32" r="6" fill="#10b981" opacity="0.2"/></svg>'+'<h4>No menu items found</h4><p>Try changing the filters, or add a new item above.</p></div></td></tr>'; return; }
+        const weekColors = { '1':'bg-emerald-100 text-emerald-700 border-2 border-emerald-300', '2':'bg-amber-100 text-amber-700 border-2 border-amber-300', '3':'bg-purple-100 text-purple-700 border-2 border-purple-300' };
+        tbody.innerHTML = filtered.map(m => `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-medium text-gray-800">${m.name}</td><td class="px-6 py-4 text-center"><span class="text-xs font-medium px-3 py-1.5 rounded-full bg-accent/10 text-accent">${m.mealPeriod}</span></td><td class="px-6 py-4 text-center text-gray-600">${m.category}</td><td class="px-6 py-4 text-center"><span class="text-xs font-bold px-4 py-2 rounded-full ${weekColors[m.week]||''}">Week ${m.week}</span></td><td class="px-6 py-4 text-center text-gray-600">${m.day}</td><td class="px-6 py-4 text-center font-semibold text-gray-700">${m.expectedServings}</td><td class="px-4 py-4"><div class="flex items-center justify-center gap-3 whitespace-nowrap"><button onclick="showItemHistory('${m.id}','${m.name}','${m.mealPeriod}','${m.day}')" class="text-blue-500 hover:text-blue-700 transition" title="View History"><i data-lucide="bar-chart-2" class="w-4 h-4"></i></button><button onclick="editMenuItem('${m.id}')" class="text-accent hover:text-emerald-700 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteMenuItem('${m.id}')" class="text-danger hover:text-red-700 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td></tr>`).join('');
+        lucide.createIcons();
+    }
+
+    window.renderDailyEntry = function() {
+        const dateStr = document.getElementById('entry-date').value; if(!dateStr) return;
+        const rotWeek = getRotationWeek(dateStr); const dayName = getDayOfWeek(dateStr);
+        const banner = document.getElementById('entry-week-info');
+        const badge = document.getElementById('entry-week-badge');
+        if(!dayName) { banner.textContent = 'Weekend — no school menu'; badge.classList.add('hidden'); document.getElementById('entry-tbody').innerHTML = '<tr><td colspan="8" class="px-6 py-12 text-center text-gray-400">Weekend</td></tr>'; return; }
+        banner.textContent = `Week ${rotWeek} · ${dayName}`;
+        const weekBadgeColors = {'1':'bg-emerald-100 text-emerald-800 border-emerald-300','2':'bg-amber-100 text-amber-800 border-amber-300','3':'bg-purple-100 text-purple-800 border-purple-300'};
+        const wc = weekBadgeColors[String(rotWeek)] || 'bg-gray-100 text-gray-700 border-gray-300';
+        badge.className = 'flex items-center gap-3';
+        badge.innerHTML = `<span class="text-xs font-bold px-4 py-2 rounded-full border-2 ${wc}">Week ${rotWeek}</span><span class="text-sm font-semibold text-gray-600">${dayName}</span>`;
+        lucide.createIcons();
+        const dayItems = menuItems.filter(m => m.week == rotWeek && m.day === dayName);
+        const existing = dailyEntries[dateStr] || {}; const tbody = document.getElementById('entry-tbody');
+        if(dayItems.length === 0) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">'+'<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="14" y="10" width="36" height="44" rx="4" stroke="#10b981" stroke-width="2"/><path d="M22 22h20M22 30h20M22 38h12" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg>'+'<h4>No items for this day</h4><p>Go to Menu Setup and add items for Week '+rotWeek+' · '+dayName+'.</p></div></td></tr>'; return; }
+        let rowsHtml = '';
+        dayItems.forEach(m => {
+            const ex = existing[m.id] || {};
+            rowsHtml += `<tr class="hover:bg-gray-50 transition border-b border-gray-100 last:border-0"><td class="px-6 py-4 font-medium text-gray-800">${m.name}</td><td class="px-6 py-4 text-center"><span class="text-xs bg-accent/10 text-accent px-3 py-1.5 rounded-full">${m.mealPeriod}</span></td><td class="px-6 py-4 text-center text-gray-600">${m.category}</td><td class="px-6 py-3 text-center"><input type="number" data-id="${m.id}" data-field="planned" value="${ex.planned ?? m.expectedServings}" min="0" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${m.id}" data-field="produced" value="${ex.produced ?? ''}" min="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${m.id}" data-field="returnQty" value="${ex.returnQty ?? ''}" min="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${m.id}" data-field="served" value="${ex.served ?? ''}" readonly class="touch-input w-full text-center px-3 py-2.5 bg-gray-50 text-gray-700 font-semibold"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${m.id}" data-field="waste" value="${ex.waste ?? ''}" min="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-3 py-2.5"></td></tr>`;
+        });
+        tbody.innerHTML = rowsHtml; lucide.createIcons();
+        tbody.querySelectorAll('tr').forEach(row => { const p = row.querySelector('[data-field="produced"]'); if(p) updateServedCalc(p); });
+    }
+
+    window.updateServedCalc = function(input) {
+        const row = input.closest('tr'); if(!row) return;
+        const produced = parseFloat(row.querySelector('[data-field="produced"]').value) || 0;
+        const returnQty = parseFloat(row.querySelector('[data-field="returnQty"]').value) || 0;
+        const waste = parseFloat(row.querySelector('[data-field="waste"]').value) || 0;
+        row.querySelector('[data-field="served"]').value = Math.max(0, produced - returnQty - waste);
+        // Color-code waste input based on waste %
+        const wasteInput = row.querySelector('[data-field="waste"]');
+        wasteInput.classList.remove('waste-ok','waste-warn','waste-bad');
+        if (produced > 0 && waste >= 0) {
+            const pct = waste / produced;
+            if (pct <= 0.05)      wasteInput.classList.add('waste-ok');
+            else if (pct <= 0.15) wasteInput.classList.add('waste-warn');
+            else                  wasteInput.classList.add('waste-bad');
+        }
+    }
+
+    window.saveDailyEntry = async function() {
+        const dateStr = document.getElementById('entry-date').value; if(!dateStr) { showToast('Select a date first!'); return; }
+        const inputs = document.querySelectorAll('#entry-tbody [data-id]'); const entry = {};
+        inputs.forEach(inp => { const id = inp.dataset.id; const field = inp.dataset.field; if(!entry[id]) entry[id] = {}; entry[id][field] = (field === 'name' || field === 'mealPeriod' || field === 'category') ? inp.value : (parseInt(inp.value) || 0); });
+        try { await setDoc(doc(db, 'dailyEntries', dateStr), entry); showToast('Daily entry saved to cloud! ✅'); } catch (error) { showToast('Error saving to cloud'); }
+    }
+
+    window.addDailyItemRow = function() {
+        const tbody = document.getElementById('entry-tbody'); if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+        const manualId = 'manual_' + Date.now().toString(36);
+        const newRow = document.createElement('tr'); newRow.className = "hover:bg-gray-50 transition border-b border-gray-100 last:border-0 bg-yellow-50/50";
+        newRow.innerHTML = `<td class="px-6 py-3 text-center"><input type="text" data-id="${manualId}" data-field="name" placeholder="Item Name" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><select data-id="${manualId}" data-field="mealPeriod" class="touch-input w-full px-3 py-2.5"><option>Breakfast</option><option selected>Lunch</option><option>A La Carte</option></select></td><td class="px-6 py-3 text-center"><select data-id="${manualId}" data-field="category" class="touch-input w-full px-3 py-2.5"><option>Entrée</option><option>Side</option><option>Vegetable</option><option>Fruit</option><option>Milk</option></select></td><td class="px-6 py-3 text-center"><input type="number" data-id="${manualId}" data-field="planned" placeholder="0" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${manualId}" data-field="produced" placeholder="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${manualId}" data-field="returnQty" placeholder="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-3 py-2.5"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${manualId}" data-field="served" readonly class="touch-input w-full text-center px-3 py-2.5 bg-gray-50 font-semibold"></td><td class="px-6 py-3 text-center"><input type="number" data-id="${manualId}" data-field="waste" placeholder="0" oninput="updateServedCalc(this)" class="touch-input w-full text-center px-3 py-2.5"></td>`;
+        tbody.appendChild(newRow);
+    }
+
+    window.copyFromYesterday = function() { const d = new Date(document.getElementById('entry-date').value + 'T12:00:00'); d.setDate(d.getDate() - 1); copyDayData(d.toISOString().split('T')[0]); }
+    window.copyFromLastWeek = function() { const d = new Date(document.getElementById('entry-date').value + 'T12:00:00'); d.setDate(d.getDate() - 7); copyDayData(d.toISOString().split('T')[0]); }
+    function copyDayData(sourceDate) {
+        const targetDate = document.getElementById('entry-date').value;
+        if(!dailyEntries[sourceDate]) { showToast('No data found for ' + sourceDate); return; }
+        if(!confirm(`Copy all data from ${sourceDate} to ${targetDate}?`)) return;
+        dailyEntries[targetDate] = JSON.parse(JSON.stringify(dailyEntries[sourceDate])); showToast(`Copied data!`);
+    }
+
+    function renderDashboard() {
+        const today = todayStr(); const entry = dailyEntries[today] || {}; const items = Object.values(entry);
+        let totalServed = 0, totalProduced = 0, totalWaste = 0, totalReturn = 0, totalPlanned = 0;
+        items.forEach(it => { totalServed += it.served || 0; totalProduced += it.produced || 0; totalWaste += it.waste || 0; totalReturn += it.returnQty || 0; totalPlanned += it.planned || 0; });
+        document.getElementById('stat-served').textContent = totalServed; document.getElementById('stat-produced').textContent = totalProduced;
+        document.getElementById('stat-waste').textContent = totalWaste; document.getElementById('stat-return').textContent = totalReturn;
+        document.getElementById('stat-waste-pct').textContent = totalProduced > 0 ? Math.round(totalWaste/totalProduced*100)+'%' : '0%';
+        document.getElementById('stat-participation').textContent = totalPlanned > 0 ? Math.round(totalServed/totalPlanned*100)+'%' : '0%';
+        // Smart waste alerts
+        const alertsContainer = document.getElementById('waste-alerts-container');
+        const alerts = computeWasteAlerts();
+        if (alerts.length > 0) {
+            alertsContainer.classList.remove('hidden');
+            alertsContainer.innerHTML = `
+                <div class='card p-6'>
+                    <div class='flex items-center gap-3 mb-4'>
+                        <div class='w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center'><i data-lucide='alert-triangle' class='w-5 h-5 text-red-500'></i></div>
+                        <div><h3 class='font-serif font-semibold text-gray-700 text-lg'>Waste Alerts</h3><p class='text-xs text-gray-500'>Items consistently exceeding 15% waste over the last 4+ entries</p></div>
+                    </div>
+                    <div class='space-y-3'>${alerts.map(a => `
+                        <div class='alert-item ${a.severity}'>
+                            <div class='flex items-center justify-between flex-wrap gap-2'>
+                                <div class='font-semibold text-gray-800'>${a.name} <span class='text-xs font-normal text-gray-500 ml-1'>${a.mealPeriod} &middot; ${a.day}</span></div>
+                                <div class='flex items-center gap-4 text-sm'>
+                                    <span class='font-bold ${a.severity === '' ? 'text-red-600' : 'text-amber-600'}'>${a.avgWastePct}% avg waste</span>
+                                    <span class='text-gray-400'>${a.dataPoints} entries</span>
+                                </div>
+                            </div>
+                            <div class='text-xs text-gray-500 mt-1'>${a.suggestion}</div>
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+            lucide.createIcons();
+        } else {
+            alertsContainer.classList.add('hidden');
+        }
+        const tbody = document.getElementById('dashboard-tbody');
+        if(items.length === 0) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">'+'<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="40" width="12" height="16" rx="2" fill="#10b981" opacity="0.3" stroke="#10b981" stroke-width="2"/><rect x="26" y="28" width="12" height="28" rx="2" fill="#10b981" opacity="0.3" stroke="#10b981" stroke-width="2"/><rect x="44" y="16" width="12" height="40" rx="2" fill="#10b981" opacity="0.3" stroke="#10b981" stroke-width="2"/></svg>'+'<h4>No production data today</h4><p>Go to Daily Entry and record today\'s counts.</p></div></td></tr>'; } 
+        else { tbody.innerHTML = items.map(it => `<tr class="hover:bg-gray-50 transition border-b border-gray-100 last:border-0"><td class="px-6 py-4 font-medium text-gray-800">${it.name||'—'}</td><td class="px-6 py-4 text-center"><span class="text-xs bg-accent/10 text-accent px-3 py-1.5 rounded-full">${it.mealPeriod||'—'}</span></td><td class="px-6 py-4 text-center">${it.planned||0}</td><td class="px-6 py-4 text-center">${it.produced||0}</td><td class="px-6 py-4 text-center font-semibold text-success">${it.served||0}</td><td class="px-6 py-4 text-center text-purple-600">${it.returnQty||0}</td><td class="px-6 py-4 text-center text-danger font-medium">${it.waste||0}</td></tr>`).join(''); }
+        renderCharts();
+        renderSparklines();
+    }
+
+
+    // SPARKLINES
+    const sparkCharts = {};
+    function drawSparkline(canvasId, trendId, values, color) {
+        const canvas = document.getElementById(canvasId); if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth || 120; canvas.height = 28;
+        if (sparkCharts[canvasId]) { sparkCharts[canvasId].destroy(); }
+        if (values.length < 2) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+        sparkCharts[canvasId] = new Chart(ctx, {
+            type: 'line',
+            data: { labels: values.map((_,i) => i), datasets: [{ data: values, borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true, backgroundColor: color.replace('1)', '0.08)') }] },
+            options: { animation: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } }, responsive: false }
+        });
+        const last = values[values.length-1]; const prev = values[values.length-2];
+        const trendEl = document.getElementById(trendId); if (!trendEl) return;
+        const diff = last - prev;
+        if (Math.abs(diff) < 0.5) { trendEl.textContent = '~ same'; trendEl.className = 'trend-flat'; }
+        else if (diff > 0) { trendEl.textContent = '\u2191 vs yesterday'; trendEl.className = 'trend-up'; }
+        else { trendEl.textContent = '\u2193 vs yesterday'; trendEl.className = 'trend-down'; }
+    }
+    function renderSparklines() {
+        const sortedDates = Object.keys(dailyEntries).sort();
+        const sv=[], pr=[], wa=[], re=[], wp=[], pa=[];
+        sortedDates.slice(-7).forEach(date => {
+            const items = Object.values(dailyEntries[date] || {});
+            let s=0,p=0,w=0,r=0,pl=0;
+            items.forEach(it => { s+=it.served||0; p+=it.produced||0; w+=it.waste||0; r+=it.returnQty||0; pl+=it.planned||0; });
+            sv.push(s); pr.push(p); wa.push(w); re.push(r);
+            wp.push(p>0 ? Math.round(w/p*100) : 0);
+            pa.push(pl>0 ? Math.round(s/pl*100) : 0);
+        });
+        drawSparkline('spark-served',       'trend-served',       sv, 'rgba(16,185,129,1)');
+        drawSparkline('spark-produced',     'trend-produced',     pr, 'rgba(59,130,246,1)');
+        drawSparkline('spark-waste',        'trend-waste',        wa, 'rgba(245,158,11,1)');
+        drawSparkline('spark-return',       'trend-return',       re, 'rgba(168,85,247,1)');
+        drawSparkline('spark-waste-pct',    'trend-waste-pct',    wp, 'rgba(239,68,68,1)');
+        drawSparkline('spark-participation','trend-participation',pa, 'rgba(16,185,129,1)');
+    }
+
+    // ITEM HISTORY MODAL
+    let historyChartInst = null;
+    window.showItemHistory = function(id, name, mealPeriod, day) {
+        document.getElementById('history-modal-title').textContent = name;
+        document.getElementById('history-modal-sub').textContent = mealPeriod + ' - ' + day;
+        const rows = [];
+        Object.keys(dailyEntries).sort().forEach(date => {
+            const entry = dailyEntries[date];
+            if (entry[id]) rows.push({ date, ...entry[id] });
+        });
+        const tbody = document.getElementById('history-tbody');
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No history yet</td></tr>';
+        } else {
+            tbody.innerHTML = rows.map(r => {
+                const pct = r.produced > 0 ? Math.round((r.waste||0)/r.produced*100) : 0;
+                const cls = pct <= 5 ? 'text-green-600 font-bold' : pct <= 15 ? 'text-amber-600 font-bold' : 'text-red-600 font-bold';
+                return '<tr class="border-b border-gray-100 hover:bg-gray-50"><td class="px-4 py-3 text-gray-700">'+r.date+'</td><td class="px-4 py-3 text-center">'+(r.planned||0)+'</td><td class="px-4 py-3 text-center">'+(r.produced||0)+'</td><td class="px-4 py-3 text-center font-semibold text-green-700">'+(r.served||0)+'</td><td class="px-4 py-3 text-center">'+(r.waste||0)+'</td><td class="px-4 py-3 text-center '+cls+'">'+pct+'%</td></tr>';
+            }).join('');
+        }
+        const canvas = document.getElementById('history-chart');
+        if (historyChartInst) { historyChartInst.destroy(); historyChartInst = null; }
+        if (rows.length >= 2) {
+            historyChartInst = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: rows.map(r => r.date),
+                    datasets: [
+                        { label: 'Served',   data: rows.map(r => r.served||0),   borderColor: 'rgba(16,185,129,1)', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.4, fill: true },
+                        { label: 'Waste',    data: rows.map(r => r.waste||0),    borderColor: 'rgba(239,68,68,1)',  backgroundColor: 'rgba(239,68,68,0.1)',  tension: 0.4, fill: true },
+                        { label: 'Produced', data: rows.map(r => r.produced||0), borderColor: 'rgba(59,130,246,1)', borderDash: [4,4], tension: 0.4, fill: false }
+                    ]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+            });
+        } else { canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height); }
+        document.getElementById('history-modal').style.display = 'flex';
+        lucide.createIcons();
+    }
+
+    // ── SCHOOL CALENDAR ──────────────────────────────────────────────────────
+    let schoolHolidays = {}; // { 'YYYY-MM-DD': 'Holiday Name' }
+    let schoolCalYear = new Date().getFullYear();
+    let schoolCalMonth = new Date().getMonth();
+
+    async function loadHolidays() {
+        try {
+            const snap = await getDocs(collection(db, 'schoolHolidays'));
+            schoolHolidays = {};
+            snap.docs.forEach(d => { schoolHolidays[d.id] = d.data().label || ''; });
+        } catch(e) { console.error('loadHolidays:', e); }
+    }
+
+    window.addHoliday = async function() {
+        const dateVal = document.getElementById('sc-date-input').value;
+        const labelVal = document.getElementById('sc-label-input').value.trim();
+        if (!dateVal) { showToast('Please select a date'); return; }
+        if (!labelVal) { showToast('Please enter a holiday name'); return; }
+        try {
+            await setDoc(doc(db, 'schoolHolidays', dateVal), { label: labelVal, createdAt: new Date().toISOString() });
+            schoolHolidays[dateVal] = labelVal;
+            document.getElementById('sc-date-input').value = '';
+            document.getElementById('sc-label-input').value = '';
+            renderSchoolCalendar();
+            showToast('Holiday marked!');
+        } catch(e) { showToast('Error saving holiday'); console.error(e); }
+    }
+
+    window.removeHoliday = async function(dateStr) {
+        if (!confirm('Remove holiday on ' + dateStr + '?')) return;
+        try {
+            await deleteDoc(doc(db, 'schoolHolidays', dateStr));
+            delete schoolHolidays[dateStr];
+            renderSchoolCalendar();
+            showToast('Holiday removed');
+        } catch(e) { showToast('Error removing holiday'); }
+    }
+
+    window.schoolCalPrev = function() {
+        schoolCalMonth--;
+        if (schoolCalMonth < 0) { schoolCalMonth = 11; schoolCalYear--; }
+        renderSchoolCalendar();
+    }
+    window.schoolCalNext = function() {
+        schoolCalMonth++;
+        if (schoolCalMonth > 11) { schoolCalMonth = 0; schoolCalYear++; }
+        renderSchoolCalendar();
+    }
+    window.schoolCalToday = function() {
+        schoolCalYear = new Date().getFullYear();
+        schoolCalMonth = new Date().getMonth();
+        renderSchoolCalendar();
+    }
+
+    window.renderSchoolCalendar = function() {
+        const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const todayISO = todayStr();
+
+        // Month label
+        const lbl = document.getElementById('school-cal-month-label');
+        if (lbl) lbl.textContent = monthNames[schoolCalMonth] + ' ' + schoolCalYear;
+
+        // Day headers
+        const hdrs = document.getElementById('school-cal-headers');
+        if (hdrs) hdrs.innerHTML = dayNames.map(d => `<div class="school-cal-day-hdr">${d}</div>`).join('');
+
+        // Build cells
+        const firstDay = new Date(schoolCalYear, schoolCalMonth, 1).getDay();
+        const daysInMonth = new Date(schoolCalYear, schoolCalMonth + 1, 0).getDate();
+        const daysInPrev = new Date(schoolCalYear, schoolCalMonth, 0).getDate();
+        const cells = [];
+
+        // Prev month padding
+        for (let i = firstDay - 1; i >= 0; i--) {
+            cells.push({ day: daysInPrev - i, current: false, date: null });
+        }
+        // Current month
+        for (let d = 1; d <= daysInMonth; d++) {
+            const mm = String(schoolCalMonth + 1).padStart(2, '0');
+            const dd = String(d).padStart(2, '0');
+            cells.push({ day: d, current: true, date: `${schoolCalYear}-${mm}-${dd}` });
+        }
+        // Next month padding
+        const remaining = 42 - cells.length;
+        for (let i = 1; i <= remaining; i++) {
+            cells.push({ day: i, current: false, date: null });
+        }
+
+        const grid = document.getElementById('school-cal-grid');
+        if (!grid) return;
+        grid.innerHTML = cells.map(cell => {
+            if (!cell.current) return `<div class="school-cal-cell other-month"><div class="school-cal-date">${cell.day}</div></div>`;
+            const dateStr = cell.date;
+            const dayOfWeek = new Date(dateStr + 'T12:00:00').getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const isToday = dateStr === todayISO;
+            const isHoliday = !!schoolHolidays[dateStr];
+            const schoolStart = new Date('2026-08-10T12:00:00');
+            const cellDate = new Date(dateStr + 'T12:00:00');
+            const inSchoolYear = cellDate >= schoolStart;
+            const rotWeek = !isWeekend && !isHoliday && inSchoolYear ? getRotationWeek(dateStr) : null;
+            const dayName = !isWeekend ? getDayOfWeek(dateStr) : null;
+
+            let cls = 'school-cal-cell';
+            if (isWeekend) cls += ' weekend';
+            if (isHoliday) cls += ' holiday';
+            if (isToday) cls += ' today';
+
+            const dateNum = `<div class="school-cal-date">${cell.day}</div>`;
+            const holidayBadge = isHoliday ? `<div class="holiday-badge">Holiday</div><div class="holiday-label">${schoolHolidays[dateStr]}</div>` : '';
+            const rotPill = rotWeek && !isHoliday ? `<div class="rotation-pill w${rotWeek}">Wk ${rotWeek}</div>` : '';
+            const clickHandler = isWeekend ? '' : `onclick="schoolCalCellClick('${dateStr}')"`;
+
+            return `<div class="${cls}" ${clickHandler}>${dateNum}${holidayBadge}${rotPill}</div>`;
+        }).join('');
+
+        // Holiday list
+        const list = document.getElementById('holiday-list');
+        const countEl = document.getElementById('holiday-count');
+        const sortedHols = Object.entries(schoolHolidays).sort((a,b) => a[0].localeCompare(b[0]));
+        if (countEl) countEl.textContent = sortedHols.length + ' holidays';
+        if (list) {
+            if (sortedHols.length === 0) {
+                list.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 64 64" fill="none"><rect x="8" y="14" width="48" height="42" rx="6" stroke="#10b981" stroke-width="2"/><path d="M8 26h48" stroke="#10b981" stroke-width="2"/><path d="M22 8v12M42 8v12" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg><h4>No holidays marked yet</h4><p>Click any school day on the calendar or use the form above.</p></div>';
+            } else {
+                list.innerHTML = sortedHols.map(([date, label]) => {
+                    const d = new Date(date + 'T12:00:00');
+                    const formatted = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+                    return `<div class="flex items-center justify-between p-3 rounded-xl mb-2" style="background:var(--page-bg);border:1px solid var(--border);">
+                        <div><div class="font-semibold text-sm" style="color:var(--ink);">${label}</div><div class="text-xs mt-0.5" style="color:var(--muted);">${formatted}</div></div>
+                        <button onclick="removeHoliday('${date}')" class="text-xs px-3 py-1.5 rounded-lg transition font-semibold" style="background:#fee2e2;color:#dc2626;" onmouseover="this.style.background='#fca5a5'" onmouseout="this.style.background='#fee2e2'">Remove</button>
+                    </div>`;
+                }).join('');
+            }
+        }
+        lucide.createIcons();
+    }
+
+    window.schoolCalCellClick = function(dateStr) {
+        // Pre-fill the quick-add form with this date
+        document.getElementById('sc-date-input').value = dateStr;
+        document.getElementById('sc-label-input').focus();
+        // If already a holiday, remove it
+        if (schoolHolidays[dateStr]) {
+            removeHoliday(dateStr);
+        }
+    }
+
+    function renderCalendar() {
+        const weekFilter = document.getElementById('cal-week-filter')?.value || 'all';
+        const periodFilter = document.getElementById('cal-period-filter')?.value || 'all';
+        const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+        const weeks = weekFilter === 'all' ? ['1','2','3'] : [weekFilter];
+        const weekNames = { '1': { label: 'Week 1', color: '#059669' }, '2': { label: 'Week 2', color: '#7c3aed' }, '3': { label: 'Week 3', color: '#d97706' } };
+        const grid = document.getElementById('calendar-grid');
+        if (!grid) return;
+        grid.innerHTML = weeks.map(wk => {
+            const wInfo = weekNames[wk];
+            const itemCount = menuItems.filter(m => m.week === wk).length;
+            return `
+            <div>
+                <div class='cal-week-header'>
+                    <div class='w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg' style='background:rgba(255,255,255,0.15);'>${wk}</div>
+                    <div><div class='font-serif font-bold text-lg'>${wInfo.label}</div><div class='text-xs opacity-70'>${itemCount} menu items</div></div>
+                </div>
+                <div class='cal-grid'>
+                    ${days.map(d => `<div class='cal-day-header'>${d.slice(0,3)}</div>`).join('')}
+                    ${days.map(d => {
+                        let items = menuItems.filter(m => m.week === wk && m.day === d);
+                        if (periodFilter !== 'all') items = items.filter(m => m.mealPeriod === periodFilter);
+                        const pills = items.map(m => {
+                            const cls = m.mealPeriod === 'Breakfast' ? 'breakfast' : m.mealPeriod === 'Lunch' ? 'lunch' : 'alacarte';
+                            return `<div class='cal-item ${cls}' title='${m.mealPeriod} · Expected: ${m.expectedServings}'>${m.name}</div>`;
+                        }).join('');
+                        return `<div class='cal-cell'>${pills || '<div style="color:var(--muted);font-size:11px;padding:4px;">No items</div>'}</div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    window.closeHistoryModal = function() { document.getElementById('history-modal').style.display = 'none'; }
+
+    // CSV IMPORT
+    let csvParsedItems = [];
+    window.openCsvModal = function() {
+        document.getElementById('csv-modal').style.display = 'flex';
+        document.getElementById('csv-preview').classList.add('hidden');
+        document.getElementById('csv-file-input').value = '';
+        lucide.createIcons();
+    }
+    window.closeCsvModal = function() { document.getElementById('csv-modal').style.display = 'none'; }
+    window.handleCsvFile = function(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l);
+            const start = lines[0].toLowerCase().includes('name') ? 1 : 0;
+            csvParsedItems = [];
+            lines.slice(start).forEach(line => {
+                const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g,''));
+                if (cols.length < 6) return;
+                const weekVal = String(cols[3]).toLowerCase().replace('week','').replace(/\s/g,'');
+                const mealVal = cols[1].trim().charAt(0).toUpperCase() + cols[1].trim().slice(1).toLowerCase();
+                csvParsedItems.push({ name: cols[0].trim(), mealPeriod: mealVal, category: cols[2].trim(), week: weekVal, day: cols[4].trim(), expectedServings: parseInt(cols[5]) || 0 });
+            });
+            document.getElementById('csv-preview-count').textContent = csvParsedItems.length + ' items ready to import';
+            document.getElementById('csv-import-count').textContent = csvParsedItems.length;
+            const tbody = document.getElementById('csv-preview-tbody');
+            tbody.innerHTML = csvParsedItems.map(it => '<tr class="border-b border-gray-100"><td class="px-3 py-2 text-left">'+it.name+'</td><td class="px-3 py-2 text-center">'+it.mealPeriod+'</td><td class="px-3 py-2 text-center">'+it.week+'</td><td class="px-3 py-2 text-center">'+it.day+'</td><td class="px-3 py-2 text-center">'+it.expectedServings+'</td></tr>').join('');
+            document.getElementById('csv-preview').classList.remove('hidden');
+        };
+        reader.readAsText(file);
+    }
+    window.importCsvItems = async function() {
+        if (!csvParsedItems.length) return;
+        let added = 0, skipped = 0;
+        for (const item of csvParsedItems) {
+            const isDuplicate = menuItems.some(m =>
+                m.name.trim().toLowerCase() === item.name.trim().toLowerCase() &&
+                m.mealPeriod === item.mealPeriod &&
+                String(m.week) === String(item.week) &&
+                m.day === item.day
+            );
+            if (isDuplicate) { skipped++; continue; }
+            try { await setDoc(doc(collection(db, 'menuItems')), item); added++; } catch(e) { console.error(e); }
+        }
+        closeCsvModal();
+        let msg = added > 0
+            ? 'Imported ' + added + ' new items' + (skipped > 0 ? ', skipped ' + skipped + ' duplicates' : '') + '!'
+            : 'No new items - all ' + skipped + ' were already in your menu.';
+        showToast(msg);
+        csvParsedItems = [];
+        renderMenuList();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const dz = document.getElementById('csv-drop-zone'); if (!dz) return;
+        dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+        dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+        dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleCsvFile(e.dataTransfer.files[0]); });
+    });
+
+    window.deleteZeroServingItems = async function() {
+        const bad = menuItems.filter(m => !m.expectedServings || parseInt(m.expectedServings) === 0);
+        if (bad.length === 0) { showToast('No bad items found!'); return; }
+        const confirmed = confirm('This will permanently delete ' + bad.length + ' items with 0 expected servings. Your real menu items will be kept. Continue?');
+        if (!confirmed) return;
+        let deleted = 0;
+        for (const item of bad) {
+            try {
+                await deleteDoc(doc(db, 'menuItems', item.id));
+                deleted++;
+            } catch(e) { console.error('Error deleting', item.id, e); }
+        }
+        showToast('Deleted ' + deleted + ' bad items!');
+        menuItems = menuItems.filter(m => m.expectedServings && parseInt(m.expectedServings) !== 0);
+        renderMenuList();
+    }
+
+    function computeWasteAlerts() {
+        const MIN_ENTRIES = 4;
+        const WARN_PCT = 0.15;
+        const itemStats = {};
+        Object.values(dailyEntries).forEach(entry => {
+            Object.values(entry).forEach(it => {
+                if (!it.name || !it.produced) return;
+                const key = it.name + '|' + (it.mealPeriod||'') + '|' + (it.day||'');
+                if (!itemStats[key]) itemStats[key] = { name: it.name, mealPeriod: it.mealPeriod||'', day: it.day||'', entries: [] };
+                const pct = it.produced > 0 ? (it.waste||0) / it.produced : 0;
+                itemStats[key].entries.push(pct);
+            });
+        });
+        const alerts = [];
+        Object.values(itemStats).forEach(s => {
+            if (s.entries.length < MIN_ENTRIES) return;
+            const recent = s.entries.slice(-6);
+            const avg = recent.reduce((a,b) => a+b, 0) / recent.length;
+            if (avg >= WARN_PCT) {
+                const pct = Math.round(avg * 100);
+                const severity = avg >= 0.25 ? '' : 'warn';
+                const suggestion = avg >= 0.25
+                    ? `Consider reducing production by ~${Math.round((avg - 0.05) * 100)}% for this item.`
+                    : `Slightly above target. Monitor for the next 2 weeks.`;
+                alerts.push({ ...s, avgWastePct: pct, severity, suggestion, dataPoints: s.entries.length });
+            }
+        });
+        alerts.sort((a,b) => b.avgWastePct - a.avgWastePct);
+        return alerts;
+    }
+
+    window.printProductionSheet = function() {
+        const dateStr = document.getElementById('entry-date').value;
+        if (!dateStr) { showToast('Select a date first!'); return; }
+        const rotWeek = getRotationWeek(dateStr);
+        const dayName = getDayOfWeek(dateStr);
+        const d = new Date(dateStr + 'T12:00:00');
+        const dateLabel = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        document.getElementById('print-date-label').textContent = dateLabel;
+        document.getElementById('print-week-label').textContent = dayName ? `Rotation Week ${rotWeek} · ${dayName}` : 'Weekend';
+        window.print();
+    }
+
+    function renderCharts() {
+        const dates = Object.keys(dailyEntries).sort().slice(-7);
+        const servedData = dates.map(d => Object.values(dailyEntries[d]).reduce((s,it)=>s+(it.served||0),0));
+        const wasteData = dates.map(d => Object.values(dailyEntries[d]).reduce((s,it)=>s+(it.waste||0),0));
+        const labels = dates.map(d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+        const ctx1 = document.getElementById('chart-daily'); if(chartDaily) chartDaily.destroy();
+        chartDaily = new Chart(ctx1, { type: 'bar', data: { labels, datasets: [{ label: 'Served', data: servedData, backgroundColor: 'rgba(16,185,129,0.8)', borderRadius: 8 }] }, options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, grid:{color:'rgba(0,0,0,0.03)'}}, x:{grid:{display:false}}} } });
+        const ctx2 = document.getElementById('chart-waste'); if(chartWaste) chartWaste.destroy();
+        chartWaste = new Chart(ctx2, { type: 'line', data: { labels, datasets: [{ label: 'Waste', data: wasteData, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#ef4444' },{ label: 'Served', data: servedData, borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#22c55e' }] }, options: { responsive:true, plugins:{legend:{position:'top',align:'end',labels:{boxWidth:12,padding:15}}}, scales:{y:{beginAtZero:true, grid:{color:'rgba(0,0,0,0.03)'}}, x:{grid:{display:false}}} } });
+    }
+
+    function getHistoricalData(itemId, week, day) {
+        const results = []; Object.keys(dailyEntries).sort().forEach(dateStr => { const entry = dailyEntries[dateStr]; if(entry[itemId] && entry[itemId].week == week && entry[itemId].day === day) results.push({ served: entry[itemId].served || 0, produced: entry[itemId].produced || 0, waste: entry[itemId].waste || 0 }); }); return results;
+    }
+
+    function forecastItem(itemId, week, day) {
+        const history = getHistoricalData(itemId, week, day); const mi = menuItems.find(m => m.id === itemId); if(!mi) return null;
+        const expectedServings = mi.expectedServings;
+        if(history.length === 0) return { name: mi.name, mealPeriod: mi.mealPeriod, expectedServings, forecast: expectedServings, recommendedProduction: Math.ceil(expectedServings * 1.05), expectedWaste: Math.round(expectedServings * 0.05), confidence: 0, dataPoints: 0 };
+        const recentN = history.slice(-10); let weightedSum = 0, weightTotal = 0;
+        recentN.forEach((h, i) => { weightedSum += h.served * (i + 1); weightTotal += (i + 1); });
+        const forecast = Math.max(0, Math.round(weightedSum / weightTotal));
+        const avgWasteRatio = recentN.reduce((s,h) => s + (h.produced > 0 ? h.waste/h.produced : 0), 0) / recentN.length;
+        const recommendedProduction = Math.ceil(forecast * 1.03 + 2); const expectedWaste = Math.round(recommendedProduction - forecast);
+        const cv = 0.5; const confidence = Math.round(Math.min(recentN.length / 10, 1) * 60 + (1 - cv) * 40);
+        return { name: mi.name, mealPeriod: mi.mealPeriod, expectedServings, forecast, recommendedProduction, expectedWaste, confidence: Math.min(95, confidence), dataPoints: history.length };
+    }
+
+    window.showForecastWeek = function(targetWeekNum, btnElement) {
+        const buttons = [{ id: 'btn-week-1', active: 'bg-emerald-500 border-emerald-300 opacity-100 scale-105', inactive: 'bg-emerald-500/40 border-transparent opacity-60' }, { id: 'btn-week-2', active: 'bg-amber-500 border-amber-300 opacity-100 scale-105', inactive: 'bg-amber-500/40 border-transparent opacity-60' }, { id: 'btn-week-3', active: 'bg-purple-500 border-purple-300 opacity-100 scale-105', inactive: 'bg-purple-500/40 border-transparent opacity-60' }];
+        buttons.forEach((b, index) => { const el = document.getElementById(b.id); el.className = `py-4 rounded-2xl font-bold text-white shadow-xl transition transform border-2 backdrop-blur-md ${index + 1 === targetWeekNum ? b.active : b.inactive}`; });
+        generateNextRotationForecast(targetWeekNum);
+    }
+
+    function generateNextRotationForecast(forceWeekNum = null) {
+        const container = document.getElementById('next-rotation-results'); const today = new Date();
+        const dayOfWeek = today.getDay(); const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const currentWeekMonday = new Date(today.setDate(diffToMonday)); currentWeekMonday.setHours(12, 0, 0, 0);
+        const currentRotWeek = getRotationWeek(todayStr()); const weeksToForecast = [];
+        for (let i = 1; i <= 3; i++) { const nextMonday = new Date(currentWeekMonday); nextMonday.setDate(currentWeekMonday.getDate() + (i * 7)); weeksToForecast.push({ weekNum: ((currentRotWeek + i - 1) % 3 + 1).toString(), startDate: nextMonday }); }
+        const weeksToShow = forceWeekNum ? weeksToForecast.filter(w => w.weekNum == forceWeekNum) : weeksToForecast;
+        let html = '';
+        weeksToShow.forEach(wf => {
+            let weekTotalProduce = 0, weekTotalServed = 0, weekTotalWaste = 0, daysHtml = '';
+            let weekBorderColor = 'border-emerald-400/30'; if(wf.weekNum === '2') weekBorderColor = 'border-amber-400/30'; if(wf.weekNum === '3') weekBorderColor = 'border-purple-400/30';
+            for (let i = 0; i < 5; i++) {
+                const loopDate = new Date(wf.startDate); loopDate.setDate(wf.startDate.getDate() + i); const dayName = getDayOfWeek(loopDate.toISOString().split('T')[0]); if (!dayName) continue;
+                const dayItems = menuItems.filter(m => m.week == wf.weekNum && m.day === dayName); let dayTotalProduce = 0, dayTotalServed = 0, dayTotalWaste = 0, rowsHtml = '';
+                dayItems.forEach(m => { const f = forecastItem(m.id, wf.weekNum, dayName); if (f) { dayTotalProduce += f.recommendedProduction; dayTotalServed += f.forecast; dayTotalWaste += f.expectedWaste; rowsHtml += `<tr class="hover:bg-emerald-50/50 transition border-b border-emerald-100 last:border-0"><td class="px-5 py-3 text-sm text-slate-800 font-medium">${m.name}</td><td class="px-5 py-3 text-sm text-center"><span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">${m.mealPeriod}</span></td><td class="px-5 py-3 text-sm text-center font-bold text-emerald-700">${f.recommendedProduction}</td><td class="px-5 py-3 text-sm text-center font-bold text-amber-600">${f.forecast}</td><td class="px-5 py-3 text-sm text-center font-bold text-red-600">${f.expectedWaste}</td></tr>`; } });
+                weekTotalProduce += dayTotalProduce; weekTotalServed += dayTotalServed; weekTotalWaste += dayTotalWaste;
+                const dateDisplay = loopDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                daysHtml += `<div class="bg-[#fdfbf7] rounded-2xl shadow-lg overflow-hidden mb-5 text-slate-800 border border-emerald-900/10"><div class="bg-gradient-to-r from-emerald-100 to-emerald-50 px-5 py-4 border-b border-emerald-200 flex justify-between items-center flex-wrap gap-3"><span class="font-serif font-bold text-emerald-900 text-xl">${dayName} <span class="text-emerald-700 font-normal text-base">(${dateDisplay})</span></span><div class="flex gap-2 text-xs font-bold flex-wrap"><span class="text-emerald-800 bg-emerald-200/60 px-3 py-1.5 rounded-xl">Produce: ${dayTotalProduce}</span><span class="text-amber-800 bg-amber-200/60 px-3 py-1.5 rounded-xl">Served: ${dayTotalServed}</span><span class="text-red-800 bg-red-200/60 px-3 py-1.5 rounded-xl">Waste: ${dayTotalWaste}</span></div></div><table class="w-full text-left"><thead class="bg-emerald-50 text-xs uppercase tracking-wider text-emerald-700 font-bold"><tr><th class="px-5 py-3">Item</th><th class="px-5 py-3 text-center">Meal</th><th class="px-5 py-3 text-center">Produce</th><th class="px-5 py-3 text-center">Served</th><th class="px-5 py-3 text-center">Waste</th></tr></thead><tbody class="divide-y divide-emerald-100">${rowsHtml || '<tr><td colspan="5" class="px-5 py-4 text-center text-slate-400 text-sm italic">No items scheduled</td></tr>'}</tbody></table></div>`;
+            }
+            html += `<div class="bg-white/10 rounded-3xl p-6 border ${weekBorderColor} backdrop-blur-md shadow-xl"><div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4 flex-wrap gap-3"><h4 class="font-serif font-bold text-2xl text-white">Week ${wf.weekNum} Summary</h4><div class="flex gap-4 text-sm font-bold flex-wrap"><span class="text-green-200 bg-green-900/30 px-4 py-2 rounded-2xl backdrop-blur-md border border-green-400/30">Total Produce: ${weekTotalProduce}</span><span class="text-yellow-200 bg-yellow-900/30 px-4 py-2 rounded-2xl backdrop-blur-md border border-yellow-400/30">Total Served: ${weekTotalServed}</span><span class="text-red-200 bg-red-900/30 px-4 py-2 rounded-2xl backdrop-blur-md border border-red-400/30">Total Waste: ${weekTotalWaste}</span></div></div>${daysHtml}</div>`;
+        });
+        container.innerHTML = html; lucide.createIcons();
+    }
+
+    window.lookupForecast = function() {
+        const week = document.getElementById('fc-week').value; const day = document.getElementById('fc-day').value; const period = document.getElementById('fc-period').value;
+        let items = menuItems.filter(m => m.week == week && m.day === day); if(period !== 'all') items = items.filter(m => m.mealPeriod === period);
+        const container = document.getElementById('lookup-results'); if(items.length === 0) { container.innerHTML = '<div class="text-gray-400 italic p-6 text-center bg-gray-50 rounded-2xl">No items found</div>'; return; }
+        container.innerHTML = `<div class="mt-6 overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-6 py-4 text-left font-semibold text-gray-600">Item</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Meal</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Expected</th><th class="px-6 py-4 text-center font-semibold text-gray-600">AI Forecast</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Produce</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Exp. Waste</th></tr></thead><tbody>${items.map(m => { const f = forecastItem(m.id, week, day); return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="px-6 py-4 font-medium">${f.name}</td><td class="px-6 py-4 text-center">${f.mealPeriod}</td><td class="px-6 py-4 text-center">${f.expectedServings}</td><td class="px-6 py-4 text-center font-bold text-accent text-lg">${f.forecast}</td><td class="px-6 py-4 text-center font-bold text-success text-lg">${f.recommendedProduction}</td><td class="px-6 py-4 text-center text-danger text-lg">${f.expectedWaste}</td></tr>`; }).join('')}</tbody></table></div>`;
+    }
+
+    window.generateWeeklyForecast = function() {
+        const week = document.getElementById('fc-weekly-week').value; const period = document.getElementById('fc-weekly-period').value; const container = document.getElementById('weekly-forecast-results');
+        currentWeeklyForecastData = []; let weeklyTotals = { forecast: 0, produce: 0, waste: 0 };
+        DAYS.forEach(day => { let dayItems = menuItems.filter(m => m.week == week && m.day === day); if (period !== 'all') dayItems = dayItems.filter(m => m.mealPeriod === period); dayItems.forEach(m => { const f = forecastItem(m.id, week, day); if (f) { currentWeeklyForecastData.push({ day, ...f }); weeklyTotals.forecast += f.forecast; weeklyTotals.produce += f.recommendedProduction; weeklyTotals.waste += f.expectedWaste; } }); });
+        if (currentWeeklyForecastData.length === 0) { container.innerHTML = '<div class="text-gray-400 italic p-8 text-center bg-gray-50 rounded-2xl border border-gray-200">No items found</div>'; return; }
+        const dayOrder = {Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5}; currentWeeklyForecastData.sort((a,b) => dayOrder[a.day] - dayOrder[b.day]);
+        let tableHtml = `<div class="overflow-x-auto border border-gray-200 rounded-2xl shadow-lg"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-6 py-4 text-left font-semibold text-gray-600">Day</th><th class="px-6 py-4 text-left font-semibold text-gray-600">Item</th><th class="px-6 py-4 text-center font-semibold text-gray-600">Meal</th><th class="px-6 py-4 text-center font-semibold text-yellow-600">Forecast</th><th class="px-6 py-4 text-center font-semibold text-green-600">Produce</th><th class="px-6 py-4 text-center font-semibold text-red-600">Exp. Waste</th></tr></thead><tbody>`;
+        currentWeeklyForecastData.forEach(r => { tableHtml += `<tr class="border-t border-gray-100 hover:bg-gray-50 transition"><td class="px-6 py-4 font-bold text-gray-700">${r.day}</td><td class="px-6 py-4 font-medium text-gray-800">${r.name}</td><td class="px-6 py-4 text-center">${r.mealPeriod}</td><td class="px-6 py-4 text-center font-bold text-yellow-600 text-lg">${r.forecast}</td><td class="px-6 py-4 text-center font-bold text-green-600 text-lg">${r.recommendedProduction}</td><td class="px-6 py-4 text-center font-bold text-red-600 text-lg">${r.expectedWaste}</td></tr>`; });
+        tableHtml += `<tr class="bg-gray-100 font-bold text-gray-800 border-t-2 border-gray-300"><td class="px-6 py-4 text-right" colspan="3">WEEK ${week} TOTALS:</td><td class="px-6 py-4 text-center text-yellow-700 text-xl">${weeklyTotals.forecast}</td><td class="px-6 py-4 text-center text-green-700 text-xl">${weeklyTotals.produce}</td><td class="px-6 py-4 text-center text-red-700 text-xl">${weeklyTotals.waste}</td></tr></tbody></table></div>`;
+        container.innerHTML = tableHtml; lucide.createIcons();
+    }
+
+    window.exportWeeklyForecastCSV = function() {
+        if (currentWeeklyForecastData.length === 0) { showToast('Generate a forecast first!'); return; }
+        const week = document.getElementById('fc-weekly-week').value; const period = document.getElementById('fc-weekly-period').value;
+        let csvContent = "Day,Item,Meal Period,Forecast,Recommended Produce,Expected Waste\n";
+        currentWeeklyForecastData.forEach(r => { csvContent += [r.day, `"${r.name}"`, r.mealPeriod, r.forecast, r.recommendedProduction, r.expectedWaste].join(",") + "\n"; });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.setAttribute("href", url); link.setAttribute("download", `Weekly_Forecast_Week${week}_${period}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); showToast('Exported!');
+    }
+
+    window.runReport = function(type) {
+        const output = document.getElementById('report-output'); const title = document.getElementById('report-title'); const thead = document.querySelector('#report-table thead'); const tbody = document.querySelector('#report-table tbody');
+        output.style.display = 'block'; const dates = Object.keys(dailyEntries).sort();
+        if(type === 'daily-sales') {
+            title.textContent = 'Daily Sales Report'; thead.innerHTML = '<tr><th class="px-6 py-4">Date</th><th class="px-6 py-4">Served</th><th class="px-6 py-4">Produced</th><th class="px-6 py-4">Waste</th><th class="px-6 py-4">Waste %</th></tr>';
+            tbody.innerHTML = dates.reverse().map(d => { const items = Object.values(dailyEntries[d]); const served = items.reduce((s,it)=>s+(it.served||0),0); const produced = items.reduce((s,it)=>s+(it.produced||0),0); const waste = items.reduce((s,it)=>s+(it.waste||0),0); return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="px-6 py-3">${d}</td><td class="px-6 py-3 font-semibold text-success">${served}</td><td class="px-6 py-3">${produced}</td><td class="px-6 py-3 text-danger">${waste}</td><td class="px-6 py-3">${produced?Math.round(waste/produced*100)+'%':'—'}</td></tr>`; }).join('') || '<tr><td colspan="5" class="px-6 py-12 text-center text-gray-400">No data</td></tr>';
+        } else if(type === 'weekly-sales') {
+            title.textContent = 'Weekly Sales Report'; thead.innerHTML = '<tr><th class="px-6 py-4">Week Start</th><th class="px-6 py-4">Days</th><th class="px-6 py-4">Served</th><th class="px-6 py-4">Waste</th></tr>';
+            const weeks = {}; dates.forEach(d => { const dt = new Date(d); const weekStart = new Date(dt); weekStart.setDate(dt.getDate() - dt.getDay() + 1); const key = weekStart.toISOString().split('T')[0]; if(!weeks[key]) weeks[key] = {dates:[],served:0,waste:0}; weeks[key].dates.push(d); Object.values(dailyEntries[d]).forEach(it => { weeks[key].served += it.served||0; weeks[key].waste += it.waste||0; }); });
+            tbody.innerHTML = Object.entries(weeks).reverse().map(([wk,data]) => `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="px-6 py-3">${wk}</td><td class="px-6 py-3">${data.dates.length}</td><td class="px-6 py-3 font-semibold text-success">${data.served}</td><td class="px-6 py-3 text-danger">${data.waste}</td></tr>`).join('') || '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-400">No data</td></tr>';
+        } else if(type === 'waste-analysis') {
+            title.textContent = 'Waste Analysis Report'; thead.innerHTML = '<tr><th class="px-6 py-4">Item</th><th class="px-6 py-4">Produced</th><th class="px-6 py-4">Waste</th><th class="px-6 py-4">Waste %</th></tr>';
+            const itemStats = {}; Object.values(dailyEntries).forEach(entry => { Object.values(entry).forEach(it => { if(!itemStats[it.name]) itemStats[it.name] = {produced:0,waste:0}; itemStats[it.name].produced += it.produced||0; itemStats[it.name].waste += it.waste||0; }); });
+            const sorted = Object.entries(itemStats).filter(([_,s])=>s.produced>0).sort((a,b) => (b[1].waste/b[1].produced) - (a[1].waste/a[1].produced));
+            tbody.innerHTML = sorted.map(([name,stats]) => { const pct = Math.round(stats.waste/stats.produced*100); return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="px-6 py-3 font-medium">${name}</td><td class="px-6 py-3">${stats.produced}</td><td class="px-6 py-3 text-danger">${stats.waste}</td><td class="px-6 py-3 font-bold ${pct>10?'text-danger':pct>5?'text-warning':'text-success'}">${pct}%</td></tr>`; }).join('') || '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-400">No data</td></tr>';
+        }
+        lucide.createIcons(); output.scrollIntoView({behavior:'smooth'});
+    }
+
+    window.exportReportCSV = function() {
+        const table = document.getElementById('report-table'); const rows = table.querySelectorAll('tr'); let csv = [];
+        rows.forEach(row => { const cells = row.querySelectorAll('th, td'); const rowData = Array.from(cells).map(c => '"'+c.textContent.trim().replace(/"/g,'""')+'"'); if(rowData.length > 0 && rowData.some(d => d !== '""')) csv.push(rowData.join(',')); });
+        const blob = new Blob([csv.join('\n')], {type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'report_'+todayStr()+'.csv'; a.click(); URL.revokeObjectURL(url); showToast('Report exported!');
+    }
+</script>
+</body>
+</html>
