@@ -512,8 +512,8 @@
         items.forEach(it => {
             const s = it.served || 0; const p = it.produced || 0;
             totalServed += s; totalProduced += p; totalWaste += it.waste || 0; totalReturn += it.returnQty || 0; totalPlanned += it.planned || 0;
-            if (it.mealPeriod === 'Breakfast') { bProduced += p; }
-            if (it.mealPeriod === 'Lunch') { lProduced += p; }
+            if (it.mealPeriod === 'Breakfast' && it.category === 'Entrée') { bProduced += p; }
+            if (it.mealPeriod === 'Lunch' && it.category === 'Entrée') { lProduced += p; }
         });
         const manual = dailyTotals[viewDate] || {};
         const bEl = document.getElementById('stat-bfast-served'); if (document.activeElement !== bEl) bEl.value = (manual.bServed ?? '');
