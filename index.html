@@ -506,7 +506,8 @@
 
     function renderDashboard() {
         const viewDate = document.getElementById('dashboard-view-date').value || todayStr(); const entry = dailyEntries[viewDate] || {}; const items = Object.values(entry).filter(it => it && typeof it === 'object' && !Array.isArray(it));
-        let totalServed = 0, totalProduced = 0, totalWaste = 0, totalReturn = 0, totalPlanned = 0;
+        const periodOrder = {Breakfast:1, Lunch:2, 'A La Carte':3};
+        items.sort((a,b) => ((periodOrder[a.mealPeriod]||9) - (periodOrder[b.mealPeriod]||9)) || (a.name||'').localeCompare(b.name||''));        let totalServed = 0, totalProduced = 0, totalWaste = 0, totalReturn = 0, totalPlanned = 0;
         let bProduced = 0, lProduced = 0;
         items.forEach(it => {
             const s = it.served || 0; const p = it.produced || 0;
